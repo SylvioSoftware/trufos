@@ -1,0 +1,33 @@
+/* ============================================================
+   7. SISTEMA DE COLUNAS (LAYOUT FLEXÍVEL)
+   ============================================================ */
+
+/* Regra para 2 colunas (como na sua página "A Empresa") */
+.grid-2 {
+    display: flex;
+    gap: 30px;
+}
+
+/* Regra para 3 colunas (ideal para listar 3 produtos ou serviços lado a lado) */
+.grid-3 {
+    display: flex;
+    gap: 20px;
+}
+
+/* Regra para 1 coluna (texto corrido padrão) */
+.coluna-unica {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* IMPORTANTE: No celular, tudo vira 1 coluna automaticamente */
+@media (max-width: 768px) {
+    .grid-2, .grid-3 {
+        flex-direction: column;
+    }
+}
+
+.item {
+    flex: 1; /* Faz com que as colunas tenham tamanhos iguais */
+    padding: 15px;
+}
