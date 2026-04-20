@@ -1,9 +1,15 @@
-<!doctype html>
+smain<!doctype html>
 <html lang="pt-br">
+  <!-- ==========================================================================
+  CABEÇALHO
+  ========================================================================== -->
   <head>
+    <!-- INFORME ABAIXO O NOME DA PAGINA, AQUELE QUE IRA APARECER NA PARTE SUPERIOR DA ABA -->
     <title>Trufos - Serviços de Manutenção</title>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- ==========================================================================
+          GOOGLE ANALYTICS (NAO ALTERAR)
+    =========================================================================== -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK"
@@ -14,27 +20,37 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-
       gtag("config", "G-ENVZ0TNVJK");
     </script>
+
+    <!-- ==========================================================================
+          SCRIPT DE CONGURACAO DO SITE (CABECALHO, RODAPE, MENU E FORMATACAO)
+    =========================================================================== -->
+    <script src="/js/componentes.js"></script>
   </head>
+  <!-- ==========================================================================
+          CORPO DO SITE
+  =========================================================================== -->
   <body>
     <div id="header-placeholder"></div>
     <div id="nav-placeholder"></div>
 
+    <!-- ==========================================================================
+          ALTERE A SECAO MAIN (ABAIXO) PARA INSERIR O CONTEUDO DO SITE
+    =========================================================================== -->
     <main class="container">
-      <h1>Serviços</h1>
-      <p>
-        A <strong>Trufos</strong> oferece serviços especializados de assistência
-        técnica, garantindo a confiabilidade e a segurança dos seus equipamentos
-        eletromédicos. Os serviços incluem a instalação, treinamento, manutenção
-        preventiva e manutenção corretiva.
-      </p>
+      <section id="servicos">
+        <h1>Serviços</h1>
+        <p>
+          A <strong>Trufos</strong> oferece serviços especializados de
+          assistência técnica, garantindo a confiabilidade e a segurança dos
+          seus equipamentos eletromédicos. Os serviços incluem a instalação,
+          treinamento, manutenção preventiva e manutenção corretiva.
+        </p>
 
-      <div class="grid">
-        <div class="col">
-          <section id="instalacao">
-            <h3>Instalação de Equipamentos</h3>
+        <div class="grid">
+          <section id="instalacao-de-autoclaves" class="col">
+            <h2 class="tamanho-h3">Instalação de Equipamentos</h2>
             <p>
               Evite erros de infraestrutura com nossa análise prévia. Indicamos
               com precisão as necessidades de elétrica e hidráulica (água e
@@ -43,20 +59,16 @@
               segurança.
             </p>
           </section>
-        </div>
-        <div class="col">
-          <section id="corretiva">
-            <h3>Manutenção Corretiva</h3>
+          <section id="manutenca-corretiva" class="col">
+            <h2 class="tamanho-h3">Manutenção Corretiva</h2>
             <p>
               Atendimento ágil para diagnóstico e reparo de falhas em
               autoclaves, lavadoras ultrassônicas, seladoras e demais
               equipamentos de CME.
             </p>
           </section>
-        </div>
-        <div class="col">
-          <section id="preventiva">
-            <h3>Manutenção Preventiva</h3>
+          <section id="manutencao-preventiva" class="col">
+            <h2 class="tamanho-h3">Manutenção Preventiva</h2>
             <p>
               Planos de revisão periódica com troca de guarnições, filtros e
               testes operacionais para evitar paradas não programadas e
@@ -64,166 +76,178 @@
             </p>
           </section>
         </div>
-      </div>
+      </section>
 
-      <section class="grid">
-        <div class="col">
-          <h3>Linha Hospitalar e Ambulatorial</h3>
-          <p>
-            Nosso pessoal está apto a realizar serviços de instalação e
-            manutenção corretiva e preventiva em toda a linha de equipamentos de
-            uso médico.
-          </p>
+      <section id="Linha-de-trabalho">
+        <h1>Linha de Trabalho</h1>
+        <div class="grid">
+          <section id="linha-hospitalar-e-ambulatorial" class="col">
+            <h2 class="tamanho-h3">Linha Hospitalar e Ambulatorial</h2>
+            <p>
+              Nosso pessoal está apto a realizar serviços de instalação e
+              manutenção corretiva e preventiva em toda a linha de equipamentos
+              de uso médico.
+            </p>
+          </section>
+          <section id="linha-odontologica" class="col">
+            <h2 class="tamanho-h3">Linha Odontológica</h2>
+            <p>
+              Atuamos com a instalação e manutenção dos equipamentos de
+              esterilização.
+            </p>
+          </section>
+          <section id="linha-laboratorial" class="col">
+            <h2 class="tamanho-h3">Laboratório</h2>
+            <p>
+              Atuamos com a manutenção de diversos equipamentos como por
+              exemplo: banho maria, estufas e autoclaves
+            </p>
+          </section>
         </div>
-        <div class="col">
-          <h3>Linha Odontológica</h3>
-          <p>
-            Atuamos com a instalação e manutenção dos equipamentos de
-            esterilização.
-          </p>
-        </div>
-        <div class="col">
-          <h3>Laboratório</h3>
-          <p>
-            Atuamos com a manutenção de diversos equipamentos como por exemplo:
-            banho maria, estufas e autoclaves
-          </p>
+        <div class="grid">
+          <section id="estetica-e-tatuagem" class="col">
+            <h2 class="tamanho-h3">Estética e Tatuagem</h2>
+            <p>
+              Atuamos com equipamento de esterilização para atender clinicas de
+              estéticas e estúdios de tatuagem.
+            </p>
+          </section>
+          <section id="linha-veterinaria" class="col">
+            <h2 class="tamanho-h3">Linha Veterinária</h2>
+            <p>
+              Dispomos de profissionais qualificados para atender a linha de
+              equipamentos de uso veterinário.
+            </p>
+          </section>
+          <div class="col"></div>
         </div>
       </section>
 
-      <section class="grid">
-        <div class="col">
-          <h3>Estética e Tatuagem</h3>
-          <p>
-            Atuamos com equipamento de esterilização para atender estéticas e
-            estúdios de tatuagem.
-          </p>
-        </div>
-        <div class="col">
-          <h3>Linha Veterinária</h3>
-          <p>
-            Dispomos de profissionais qualificados para atender a linha de
-            equipamentos de uso veterinário.
-          </p>
-        </div>
-        <div class="col"></div>
-      </section>
-
-      <h2 class="titulo-lista">Equipamentos que Atendemos</h2>
-      <section class="grid">
-        <div class="col">
-          <ul>
-            <li>Aspirador Cirúrgico</li>
-            <li>Autoclave</li>
-            <li>Berço Aquecido</li>
-            <li>Bisturi Elétrico (ou eletrônico)</li>
-            <li>Bomba Extratora de Leite</li>
-            <li>Cabo Paciente</li>
-            <li>Cadeira de Exames</li>
-            <li>Cadeira de Rodas</li>
-            <li>Cadeira Ginecológica</li>
-            <li>Cama Hospitalar</li>
-            <li>Cardioversor</li>
-            <li>Coagulador por Gás Argônio</li>
-            <li>Colposcópio</li>
-          </ul>
-        </div>
-        <div class="col">
-          <ul>
-            <li>Desfibrilador</li>
-            <li>Destiladora de Água</li>
-            <li>Doppler Fetal</li>
-            <li>Doppler Vascular</li>
-            <li>Eletrocardiógrafo (ECG)</li>
-            <li>Eletrocautério</li>
-            <li>Endoscópio</li>
-            <li>Estufa</li>
-            <li>Foco Cirúrgico</li>
-            <li>Fotóforo</li>
-            <li>Fototerapia</li>
-            <li>Incubadora Teste Biológico</li>
-            <li>Incubadora Recém Nascido</li>
-          </ul>
-        </div>
-        <div class="col">
-          <ul>
-            <li>Lavadora Ultrassônica</li>
-            <li>Mesa Cirúrgica</li>
-            <li>Microscópio</li>
-            <li>Monitor Cardíaco</li>
-            <li>Monitor de Oximetria</li>
-            <li>Monitor Multiparamétrico</li>
-            <li>Nebulizador</li>
-            <li>Oftlamoscópio</li>
-            <li>Osmose Reversa</li>
-            <li>Otoscópio</li>
-            <li>Seladora de Papel Grau Cirúrgico</li>
-            <li>Sensor para Oxímetro de Pulso</li>
-            <li>Sistema de Hiperhipotermia</li>
-          </ul>
+      <section id="equipamentos-que-atenemos">
+        <h1 class="tamanho-h2">Equipamentos que Atendemos</h1>
+        <div class="grid">
+          <div class="col">
+            <ul>
+              <li>Aspirador Cirúrgico</li>
+              <li>Autoclave</li>
+              <li>Berço Aquecido</li>
+              <li>Bisturi Elétrico (ou eletrônico)</li>
+              <li>Bomba Extratora de Leite</li>
+              <li>Cabo Paciente</li>
+              <li>Cadeira de Exames</li>
+              <li>Cadeira de Rodas</li>
+              <li>Cadeira Ginecológica</li>
+              <li>Cama Hospitalar</li>
+              <li>Cardioversor</li>
+              <li>Coagulador por Gás Argônio</li>
+              <li>Colposcópio</li>
+            </ul>
+          </div>
+          <div class="col">
+            <ul>
+              <li>Desfibrilador</li>
+              <li>Destiladora de Água</li>
+              <li>Doppler Fetal</li>
+              <li>Doppler Vascular</li>
+              <li>Eletrocardiógrafo (ECG)</li>
+              <li>Eletrocautério</li>
+              <li>Endoscópio</li>
+              <li>Estufa</li>
+              <li>Foco Cirúrgico</li>
+              <li>Fotóforo</li>
+              <li>Fototerapia</li>
+              <li>Incubadora Teste Biológico</li>
+              <li>Incubadora Recém Nascido</li>
+            </ul>
+          </div>
+          <div class="col">
+            <ul>
+              <li>Lavadora Ultrassônica</li>
+              <li>Mesa Cirúrgica</li>
+              <li>Microscópio</li>
+              <li>Monitor Cardíaco</li>
+              <li>Monitor de Oximetria</li>
+              <li>Monitor Multiparamétrico</li>
+              <li>Nebulizador</li>
+              <li>Oftalmoscópio</li>
+              <li>Osmose Reversa</li>
+              <li>Otoscópio</li>
+              <li>Seladora de Papel Grau Cirúrgico</li>
+              <li>Sensor para Oxímetro de Pulso</li>
+              <li>Sistema de Hiperhipotermia</li>
+            </ul>
+          </div>
         </div>
       </section>
 
-      <h2 class="titulo-lista">Assistência técnica autorizada:</h2>
-      <ul>
-        <li>Autoclaves Tuttnauer</li>
-        <li>Seladoras Selapack</li>
-      </ul>
+      <section id="assitencia-tecnica-autorizada>">
+        <h1 class="tamanho-h2">Assistência técnica autorizada:</h1>
+        <ul>
+          <li>Autoclaves Tuttnauer</li>
+          <li>Seladoras Selapack</li>
+        </ul>
+      </section>
 
-      <h2 class="titulo-lista">
-        Atuamos com assistência técnica especializada de diversas marcas, como:
-      </h2>
-      <section class="grid">
-        <div class="col">
-          <ul>
-            <li>Baumer</li>
-            <li>Bioex</li>
-            <li>Bioflex</li>
-            <li>Brasmed</li>
-            <li>CMOS Drake</li>
-            <li>Cristófoli</li>
-            <li>Dabi Atlante</li>
-            <li>Defend</li>
-            <li>Deltronix</li>
-            <li>Digitale</li>
-            <li>Emai</li>
-          </ul>
-        </div>
-        <div class="col">
-          <ul>
-            <li>Fanem</li>
-            <li>Gigante Recém Nascido</li>
-            <li>Gnatus</li>
-            <li>Instramed</li>
-            <li>Luferco</li>
-            <li>MartecMed</li>
-            <li>Medpej</li>
-            <li>Nevoni</li>
-            <li>NS</li>
-            <li>Olidef</li>
-            <li>Sanders</li>
-          </ul>
-        </div>
-        <div class="col">
-          <ul>
-            <li>Selapack</li>
-            <li>Sercon</li>
-            <li>Sismatec</li>
-            <li>Sonitech</li>
-            <li>Sispack</li>
-            <li>Stermax</li>
-            <li>Tuttnauer</li>
-            <li>Unique</li>
-            <li>Welch Allyn / Tycos</li>
-            <li>WEM</li>
-          </ul>
-        </div>
+      <section id="assistencia-tecnica-especializada">
+        <h1 class="tamanho-h2">
+          Atuamos com assistência técnica especializada de diversas marcas,
+          como:
+        </h1>
+        <section class="grid">
+          <div class="col">
+            <ul>
+              <li>Baumer</li>
+              <li>Bioex</li>
+              <li>Bioflex</li>
+              <li>Brasmed</li>
+              <li>CMOS Drake</li>
+              <li>Cristófoli</li>
+              <li>Dabi Atlante</li>
+              <li>Defend</li>
+              <li>Deltronix</li>
+              <li>Digitale</li>
+              <li>Emai</li>
+            </ul>
+          </div>
+          <div class="col">
+            <ul>
+              <li>Fanem</li>
+              <li>Gigante Recém Nascido</li>
+              <li>Gnatus</li>
+              <li>Instramed</li>
+              <li>Luferco</li>
+              <li>MartecMed</li>
+              <li>Medpej</li>
+              <li>Nevoni</li>
+              <li>NS</li>
+              <li>Olidef</li>
+              <li>Sanders</li>
+            </ul>
+          </div>
+          <div class="col">
+            <ul>
+              <li>Selapack</li>
+              <li>Sercon</li>
+              <li>Sismatec</li>
+              <li>Sonitech</li>
+              <li>Sispack</li>
+              <li>Stermax</li>
+              <li>Tuttnauer</li>
+              <li>Unique</li>
+              <li>Welch Allyn / Tycos</li>
+              <li>WEM</li>
+            </ul>
+          </div>
+        </section>
       </section>
     </main>
-
+    <!-- ==========================================================================
+          RODAPE
+    =========================================================================== -->
     <div id="footer-placeholder"></div>
+    <!-- ==========================================================================
+          ICONE FLUTUANTE DO WHATSAPP
+    =========================================================================== -->
     <div id="whatsapp-placeholder"></div>
-
-    <script src="js/componentes.js"></script>
   </body>
 </html>

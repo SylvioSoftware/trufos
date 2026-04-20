@@ -1,9 +1,15 @@
 <!doctype html>
 <html lang="pt-br">
+  <!-- ==========================================================================
+        CABEÇALHO
+  =========================================================================== -->
   <head>
+    <!-- INFORME ABAIXO O NOME DA PAGINA, AQUELE QUE IRA APARECER NA PARTE SUPERIOR DA ABA -->
     <title>Trufos - Contato</title>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- ==========================================================================
+          GOOGLE ANALYTICS (NAO ALTERAR)
+    =========================================================================== -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK"
@@ -14,45 +20,60 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-
       gtag("config", "G-ENVZ0TNVJK");
     </script>
+
+    <!-- ==========================================================================
+          SCRIPT DE CONGURACAO DO SITE (CABECALHO, RODAPE, MENU E FORMATACAO)
+    =========================================================================== -->
+    <script src="/js/componentes.js"></script>
   </head>
+  <!-- ==========================================================================
+        CORPO DO SITE
+  =========================================================================== -->
   <body>
     <div id="header-placeholder"></div>
     <div id="nav-placeholder"></div>
 
+    <!-- ==========================================================================
+          ALTERE A SECAO MAIN (ABAIXO) PARA INSERIR O CONTEUDO DO SITE
+    =========================================================================== -->
     <main class="container">
-      <h1>Fale Conosco</h1>
-      <p>
-        Estamos prontos para atender sua clínica ou hospital em todo o Rio
-        Grande do Sul.
-      </p>
+      <section id="fale-conosco">
+        <h1>Fale Conosco</h1>
+        <p>
+          Estamos prontos para atender sua clínica ou hospital em todo o Rio
+          Grande do Sul.
+        </p>
 
-      <div class="grid">
-        <div class="col">
-          <h2>Canais de Atendimento</h2>
-          <p><strong>Telefone:</strong> (51) 3061-1094</p>
-          <p><strong>WhatsApp:</strong> (51) 99270-1789</p>
-          <p>
-            <strong>E-mail:</strong>
-            <a href="mailto:contato@trufos.com.br"> contato@trufos.com.br </a>
-          </p>
+        <div class="grid">
+          <section id="canais-de-atendimento" class="col">
+            <h2>Canais de Atendimento</h2>
+            <p><strong>Telefone:</strong> (51) 3061-1094</p>
+            <p><strong>WhatsApp:</strong> (51) 99270-1789</p>
+            <p>
+              <strong>E-mail:</strong>
+              <a href="mailto:contato@trufos.com.br">contato@trufos.com.br </a>
+            </p>
+          </section>
+          <section id="localizacao" class="col">
+            <h2>Localização</h2>
+            <p>
+              Rua Fernando Strehlau, 22<br />
+              Bairro Jardim Itu (Zona Norte)<br />
+              Porto Alegre - RS
+            </p>
+          </section>
         </div>
-        <div class="col">
-          <h2>Localização</h2>
-          <p>
-            Rua Fernando Strehlau, 22<br />
-            Bairro Jardim Itu (Zona Norte)<br />
-            Porto Alegre - RS
-          </p>
-        </div>
-      </div>
+      </section>
     </main>
-
+    <!-- ==========================================================================
+            RODAPE
+    =========================================================================== -->
     <div id="footer-placeholder"></div>
+    <!-- ==========================================================================
+          ICONE FLUTUANTE DO WHATSAPP
+    =========================================================================== -->
     <div id="whatsapp-placeholder"></div>
-
-    <script src="js/componentes.js"></script>
   </body>
 </html>

@@ -1,30 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <title>Trufos - [NOME DA PÁGINA]</title>
+  <!-- ==========================================================================
+            CABEÇALHO
+  =========================================================================== -->
+  <head>
+    <!-- INFORME ABAIXO O NOME DA PAGINA, AQUELE QUE IRA APARECER NA PARTE SUPERIOR DA ABA -->
+    <title>Trufos - [NOME_DA_PÁGINA]</title>
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK"></script>
+    <!-- ==========================================================================
+                GOOGLE ANALYTICS (NAO ALTERAR)
+    =========================================================================== -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-ENVZ0TNVJK');
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-ENVZ0TNVJK");
     </script>
 
-    <script src="js/componentes.js"></script>
-</head>
-<body>
+    <!-- ==========================================================================
+                SCRIPT DE CONGURACAO DO SITE (CABECALHO, RODAPE, MENU E FORMATACAO)
+    =========================================================================== -->
+    <script src="/js/componentes.js"></script>
+  </head>
+  <!-- ==========================================================================
+                CORPO DO SITE
+  =========================================================================== -->
+  <body>
     <div id="header-placeholder"></div>
     <div id="nav-placeholder"></div>
 
+    <!-- ==========================================================================
+                ALTERE A SECAO MAIN (ABAIXO) PARA INSERIR O CONTEUDO DO SITE
+    =========================================================================== -->
     <main>
-        <section class="container">
-            <h1>Título da Seção</h1>
-            <p>Seu conteúdo começa aqui...</p>
-        </section>
+      <section id="tirulo-da-secao" class="container">
+        <h1>Título da Seção</h1>
+        <p>Seu conteúdo começa aqui...</p>
+      </section>
     </main>
-
+    <!-- ==========================================================================
+                RODAPE
+    =========================================================================== -->
     <div id="footer-placeholder"></div>
+    <!-- ==========================================================================
+                ICONE FLUTUANTE DO WHATSAPP
+    =========================================================================== -->
     <div id="whatsapp-placeholder"></div>
-</body>
+  </body>
 </html>

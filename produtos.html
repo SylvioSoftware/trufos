@@ -1,9 +1,15 @@
 <!doctype html>
 <html lang="pt-br">
+  <!-- ==========================================================================
+        CABEÇALHO
+  =========================================================================== -->
   <head>
+    <!-- INFORME ABAIXO O NOME DA PAGINA, AQUELE QUE IRA APARECER NA PARTE SUPERIOR DA ABA -->
     <title>Trufos - Produtos</title>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- ==========================================================================
+          GOOGLE ANALYTICS (NAO ALTERAR)
+    =========================================================================== -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK"
@@ -14,49 +20,64 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-
       gtag("config", "G-ENVZ0TNVJK");
     </script>
+
+    <!-- ==========================================================================
+          SCRIPT DE CONGURACAO DO SITE (CABECALHO, RODAPE, MENU E FORMATACAO)
+    =========================================================================== -->
+    <script src="/js/componentes.js"></script>
   </head>
+  <!-- ==========================================================================
+        CORPO DO SITE
+  =========================================================================== -->
   <body>
     <div id="header-placeholder"></div>
     <div id="nav-placeholder"></div>
 
+    <!-- ==========================================================================
+          ALTERE A SECAO MAIN (ABAIXO) PARA INSERIR O CONTEUDO DO SITE
+    =========================================================================== -->
     <main class="container">
-      <h1>Nossos Produtos</h1>
-      <p>
-        Trabalhamos com as melhores marcas de equipamentos hospitalares e
-        veterinários, focando em durabilidade e tecnologia.
-      </p>
-
-      <section id="autoclaves" style="margin-top: 30px">
-        <h2>Autoclaves</h2>
+      <section id="nossos-produtos">
+        <h1>Nossos Produtos</h1>
         <p>
-          Modelos horizontais e gravitacionais para esterilização eficiente em
-          diversos tamanhos (19L, 23L, 65L e mais).
+          Trabalhamos com as melhores marcas de equipamentos hospitalares e
+          veterinários, focando em durabilidade e tecnologia.
         </p>
-      </section>
 
-      <section id="lavadoras" style="margin-top: 30px">
-        <h2>Lavadoras Ultrassônicas</h2>
-        <p>
-          Equipamentos de alta performance para limpeza profunda de instrumentos
-          cirúrgicos.
-        </p>
-      </section>
+        <section id="autoclaves" style="margin-top: 30px">
+          <h2>Autoclaves</h2>
+          <p>
+            Modelos horizontais e gravitacionais para esterilização eficiente em
+            diversos tamanhos (19L, 23L, 65L e mais).
+          </p>
+        </section>
 
-      <section id="seladoras" style="margin-top: 30px">
-        <h2>Seladoras Térmicas</h2>
-        <p>
-          Garantia de selagem perfeita para a manutenção da esterilidade dos
-          seus materiais.
-        </p>
+        <section id="lavadoras" style="margin-top: 30px">
+          <h2>Lavadoras Ultrassônicas</h2>
+          <p>
+            Equipamentos de alta performance para limpeza profunda de
+            instrumentos cirúrgicos.
+          </p>
+        </section>
+
+        <section id="seladoras-termicas" style="margin-top: 30px">
+          <h2>Seladoras Térmicas</h2>
+          <p>
+            Garantia de selagem perfeita para a manutenção da esterilidade dos
+            seus materiais.
+          </p>
+        </section>
       </section>
     </main>
-
+    <!--  ==========================================================================
+          RODAPE
+    ============================================================================ -->
     <div id="footer-placeholder"></div>
+    <!-- ==========================================================================
+          ICONE FLUTUANTE DO WHATSAPP
+    =========================================================================== -->
     <div id="whatsapp-placeholder"></div>
-
-    <script src="js/componentes.js"></script>
   </body>
 </html>

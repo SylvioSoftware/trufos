@@ -1,9 +1,16 @@
 <!doctype html>
 <html lang="pt-br">
+  <!-- ==========================================================================
+        CABEÇALHO
+  ========================================================================== -->
   <head>
+    <!-- INFORME ABAIXO O NOME DA PAGINA, AQUELE QUE IRA APARECER NA PARTE
+    SUPERIOR DA ABA -->
     <title>Trufos - A Empresa</title>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- ==========================================================================
+          GOOGLE ANALYTICS (NAO ALTERAR)
+    =========================================================================== -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK"
@@ -14,45 +21,60 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-
       gtag("config", "G-ENVZ0TNVJK");
     </script>
+
+    <!-- ==========================================================================
+          SCRIPT DE CONGURACAO DO SITE (CABECALHO, RODAPE, MENU E FORMATACAO)
+    =========================================================================== -->
+    <script src="/js/componentes.js"></script>
   </head>
+  <!-- ==========================================================================
+        CORPO DO SITE
+  =========================================================================== -->
   <body>
     <div id="header-placeholder"></div>
     <div id="nav-placeholder"></div>
 
+    <!-- ==========================================================================
+          ALTERE A SECAO MAIN (ABAIXO) PARA INSERIR O CONTEUDO DO SITE
+    =========================================================================== -->
     <main class="container">
-      <h1>A Empresa...</h1>
-      <p>
-        A <strong>Trufos</strong> atua com vendas e serviços de instalação e
-        manutenção preventiva e corretiva de equipamentos eletromédicos para
-        clínicas e hospitais humanos e veterinários. Atendemos todo o
-        <strong>Rio Grande do Sul</strong> com base em Porto Alegre.
-      </p>
+      <section id="a-empresa">
+        <h1>A Empresa...</h1>
+        <p>
+          A <strong>Trufos</strong> atua com vendas e serviços de instalação e
+          manutenção preventiva e corretiva de equipamentos eletromédicos para
+          clínicas e hospitais humanos e veterinários. Atendemos todo o
+          <strong>Rio Grande do Sul</strong> com base em Porto Alegre.
+        </p>
+      </section>
 
       <div class="grid">
-        <div class="col">
+        <section id="quem-somos" class="col">
           <h2>Quem Somos</h2>
           <p>
             Nossa equipe conta com sólida experiência de mercado, garantindo
             precisão técnica e agilidade em cada atendimento hospitalar.
           </p>
-        </div>
-        <div class="col">
+        </section>
+        <section id="nossa-historia" class="col">
           <h2>Nossa História</h2>
           <p>
             Fundada em março de 2016 por <strong>Sylvio Alves</strong>, que atua
             no ramo desde janeiro de 1997, a Trufos nasceu para oferecer
             excelência técnica e parcerias duradouras.
           </p>
-        </div>
+        </section>
       </div>
     </main>
-
+    <!-- ==========================================================================
+          RODAPE
+    =========================================================================== -->
     <div id="footer-placeholder"></div>
+    <!-- ==========================================================================
+          ICONE FLUTUANTE DO WHATSAPP
+    =========================================================================== -->
     <div id="whatsapp-placeholder"></div>
-
-    <script src="js/componentes.js"></script>
   </body>
 </html>

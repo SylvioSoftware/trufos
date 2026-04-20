@@ -138,6 +138,30 @@ h3 {
   color: var(--azul-trufos);
 }
 
+/* Criando uma classe que imita o tamanho do h1 padrão */
+.tamanho-h1 {
+  font-size: 32px;
+  font-weight: bold; /* Mantém o negrito típico de títulos */
+}
+
+/* Criando uma classe que imita o tamanho do h2 padrão */
+.tamanho-h2 {
+  font-size: 24px;
+  font-weight: bold; /* Mantém o negrito típico de títulos */
+}
+
+/* Criando uma classe que imita o tamanho do h3 padrão */
+.tamanho-h3 {
+  font-size: 18.7px;
+  font-weight: bold; /* Mantém o negrito típico de títulos */
+}
+
+/* Criando uma classe que imita o tamanho do h4 padrão */
+.tamanho-h4 {
+  font-size: 16px;
+  font-weight: bold; /* Mantém o negrito típico de títulos */
+}
+
 .grid {
   display: flex;
   gap: 50px;

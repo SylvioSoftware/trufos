@@ -21,14 +21,14 @@ function carregarComponente(id, arquivo) {
    ========================================================================== */
 window.addEventListener("DOMContentLoaded", function () {
   // Carrega o Head (Metas, CSS, Favicon)
-  fetch("includes/head.html")
+  fetch("/includes/head.html")
     .then((response) => response.text())
     .then((data) => {
       document.head.innerHTML += data;
     });
 
   // Carrega o menu e logo após adiciona o evento de clique
-  fetch("includes/menu.html")
+  fetch("/includes/menu.html")
     .then((response) => response.text())
     .then((data) => {
       document.getElementById("nav-placeholder").innerHTML = data;
@@ -45,7 +45,7 @@ window.addEventListener("DOMContentLoaded", function () {
     });
 
   // Carrega os outros componentes
-  carregarComponente("header-placeholder", "includes/cabecalho.html");
-  carregarComponente("footer-placeholder", "includes/rodape.html");
-  carregarComponente("whatsapp-placeholder", "includes/BotaoWA.html");
+  carregarComponente("header-placeholder", "/includes/cabecalho.html");
+  carregarComponente("footer-placeholder", "/includes/rodape.html");
+  carregarComponente("whatsapp-placeholder", "/includes/BotaoWA.html");
 });
