@@ -210,8 +210,23 @@ footer {
 }
 
 .footer-link {
-  color: #ffffff;
+  color: #ffffff !important;
   text-decoration: underline;
+}
+
+/* Isso garante que TODOS os links dentro do rodapé sejam da mesma cor */
+footer a,
+footer a:visited,
+footer a:link {
+  color: white !important; /* Ou a cor que você escolher */
+  text-decoration: underline;
+}
+
+/* Quando o mouse passar por cima, ele dá um leve brilho */
+footer a:hover {
+  color: #f0f0f0 !important;
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 /* ==========================================================================
