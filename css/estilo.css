@@ -312,3 +312,55 @@ footer a:hover {
     margin: 0;
   }
 }
+/* ==========================================================================
+   ESTILOS PARA AS SANFONAS (DETAILS/SUMMARY) - CONTEÚDO HISTÓRICO
+   ========================================================================== */
+details {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #fcfcfc;
+  transition: all 0.3s ease;
+}
+
+summary {
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--azul-trufos); /* Usando sua variável oficial */
+  outline: none;
+  font-size: 1.1em;
+}
+
+details[open] {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+details[open] summary {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Formatação interna dos textos das sanfonas */
+.conteudo-antigo p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.conteudo-antigo ul {
+  margin-bottom: 15px;
+  padding-left: 25px;
+}
+
+/* Bloco de Alerta Técnico (Destaque para o diferencial da Trufos) */
+.alerta-tecnico {
+  background-color: #fff3cd;
+  padding: 20px;
+  border-left: 5px solid #ffc107;
+  margin: 20px 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.95em;
+  color: #856404;
+}
