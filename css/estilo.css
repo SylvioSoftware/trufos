@@ -294,29 +294,19 @@ footer a:hover {
   .dropdown {
     position: static; /* No celular, o submenu fica dentro do fluxo normal */
     width: 100%;
-    box-shadow: none;
-
-    /* Mágica para evitar o salto: */
-    /*display: none; /* Mantemos o display none por padrão no mobile */
-    /*opacity: 0;*/
-    /*transition: opacity 0.4s ease; /* Cria um pequeno fôlego */
+    /*box-shadow: none;*/
+    display: none; /* JS controla a exibição */
+    background: #003366; /* Um azul um pouco mais escuro para dar contraste */
   }
 
-  /* Garante que ele apareça quando o LI for tocado */
-  /*
-  nav li:hover .dropdown,
-  nav li:active .dropdown {
+  .dropdown a {
     display: block;
-    opacity: 1;
+    padding: 15px 40px !important; /* Mais recuo para parecer subitem */
+    color: white !important;
+    text-transform: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
-*/
-  /*
-  /* Melhora o espaçamento para o dedo não clicar errado */
-  /*.dropdown a {
-  /*  padding: 15px 20px; /* Aumenta a área de toque no celular */
-  /*  font-size: 1em; /* Texto um pouco maior para facilitar leitura */
-  /*}
-  */
+
   .grid {
     flex-direction: column; /* Em vez de lado a lado (row), fica um sobre o outro */
     gap: 15px; /* Espaço vertical entre as listas de marcas */
@@ -335,7 +325,7 @@ footer a:hover {
 
   /* Desabilita o link no menu-pai */
   .link-pai {
-    pointer-events: none; /* O clique "atravessa" o link e não ativa a navegação */
+    /*pointer-events: none; /* O clique "atravessa" o link e não ativa a navegação */
     cursor: default;
   }
 }
