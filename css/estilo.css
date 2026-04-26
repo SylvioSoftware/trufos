@@ -295,7 +295,26 @@ footer a:hover {
     position: static; /* No celular, o submenu fica dentro do fluxo normal */
     width: 100%;
     box-shadow: none;
+
+    /* Mágica para evitar o salto: */
+    display: none; /* Mantemos o display none por padrão no mobile */
+    opacity: 0;
+    transition: opacity 0.4s ease; /* Cria um pequeno fôlego */
   }
+
+  /* Garante que ele apareça quando o LI for tocado */
+  nav li:hover .dropdown,
+  nav li:active .dropdown {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Melhora o espaçamento para o dedo não clicar errado */
+  .dropdown a {
+    padding: 15px 20px; /* Aumenta a área de toque no celular */
+    font-size: 1em; /* Texto um pouco maior para facilitar leitura */
+  }
+
   .grid {
     flex-direction: column; /* Em vez de lado a lado (row), fica um sobre o outro */
     gap: 15px; /* Espaço vertical entre as listas de marcas */
