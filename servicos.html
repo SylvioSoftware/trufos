@@ -20,17 +20,35 @@
     <!-- ==========================================================================
           GOOGLE ANALYTICS (NAO ALTERAR)
     =========================================================================== -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK"
-    ></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-ENVZ0TNVJK");
+      (function () {
+        // 1. Definição das condições de bloqueio:
+        // - Se o endereço for localhost ou 127.0.0.1 (Live Server)
+        // - Se a URL contiver "?teste=true" (Para você usar no celular)
+        const isLocal =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1";
+        const isTestMode = window.location.search.includes("teste=true");
+
+        if (!isLocal && !isTestMode) {
+          // Se NÃO for teste, carrega o script externo do Google
+          const script = document.createElement("script");
+          script.async = true;
+          script.src =
+            "https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK";
+          document.head.appendChild(script);
+
+          // Configuração padrão do GA
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+          gtag("config", "G-ENVZ0TNVJK");
+        } else {
+          console.log("Analytics bloqueado: Ambiente de teste detectado.");
+        }
+      })();
     </script>
 
     <!-- ==========================================================================
