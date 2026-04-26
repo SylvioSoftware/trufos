@@ -328,6 +328,17 @@ footer a:hover {
     /*pointer-events: none; /* O clique "atravessa" o link e não ativa a navegação */
     cursor: default;
   }
+
+  /* IMPORTANTE: Cancela o hover do desktop para o JS assumir o controle total no celular */
+  nav li:hover .dropdown {
+    display: none;
+  }
+
+  /* Mantém o link pai clicável para o JS, mas sem disparar a navegação */
+  .link-pai {
+    cursor: pointer;
+    display: block;
+  }
 }
 /* ==========================================================================
    ESTILOS PARA AS SANFONAS (DETAILS/SUMMARY) - CONTEÚDO HISTÓRICO
