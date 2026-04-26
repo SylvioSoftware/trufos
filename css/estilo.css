@@ -311,6 +311,12 @@ footer a:hover {
     padding-left: 20px;
     margin: 0;
   }
+
+  /* Desabilita o link no menu-pai */
+  .link-pai {
+    pointer-events: none; /* O clique "atravessa" o link e não ativa a navegação */
+    cursor: default;
+  }
 }
 /* ==========================================================================
    ESTILOS PARA AS SANFONAS (DETAILS/SUMMARY) - CONTEÚDO HISTÓRICO
