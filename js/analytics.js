@@ -3,37 +3,44 @@
    ========================================================================== */
 (function () {
   // 1. Definição de ambientes de teste
+  const hostname = window.location.hostname;
   const isLocal =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1";
-  const hasTestParam = window.location.search.includes("teste=true");
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.includes("192.168"); // Pega IP da rede local tb
 
-  // 2. Persistência do modo teste na sessão
+  // 2. Captura o parâmetro na URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const hasTestParam = urlParams.has("teste"); // Verifica se existe 'teste' na URL
+
+  // 3. Se o parâmetro existir (ex: ?teste=true ou apenas ?teste), ativa a persistência
   if (hasTestParam) {
     sessionStorage.setItem("modo_teste_trufos", "ativo");
+    console.log("Trufos Dev: Modo teste ATIVADO e salvo na sessão.");
   }
 
-  const isTestMode = sessionStorage.getItem("modo_teste_trufos") === "ativo";
+  // 4. Verifica se a sessão já estava marcada como teste
+  const isTestSession = sessionStorage.getItem("modo_teste_trufos") === "ativo";
 
-  // 3. Execução condicional
-  if (!isLocal && !isTestMode) {
-    // Cria a tag de script do Google
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK";
-    document.head.appendChild(script);
-
-    // Configuração do GA
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-    gtag("config", "G-ENVZ0TNVJK");
-
-    console.log("Analytics Trufos: Ativo (Produção)");
-  } else {
-    // Mensagem discreta no console para você saber que está funcionando
-    console.log("Analytics Trufos: Bloqueado (Ambiente de Teste)");
+  // 5. Decisão Final
+  if (isLocal || isTestSession) {
+    console.log("Analytics Trufos: BLOQUEADO (Local ou Sessão de Teste)");
+    // Se for teste, saímos da função e não carregamos nada do Google
+    return;
   }
+
+  // 6. Se passou pelas travas, carrega o Google Analytics
+  console.log("Analytics Trufos: ATIVO (Monitorando tráfego real)");
+
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = "https://www.googletagmanager.com/gtag/js?id=G-ENVZ0TNVJK";
+  document.head.appendChild(script);
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "G-ENVZ0TNVJK");
 })();
