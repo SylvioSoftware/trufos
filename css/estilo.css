@@ -312,11 +312,12 @@ footer a:hover {
 */
   /*
   /* Melhora o espaçamento para o dedo não clicar errado */
-  .dropdown a {
-    padding: 15px 20px; /* Aumenta a área de toque no celular */
-    font-size: 1em; /* Texto um pouco maior para facilitar leitura */
-  }
-  */ .grid {
+  /*.dropdown a {
+  /*  padding: 15px 20px; /* Aumenta a área de toque no celular */
+  /*  font-size: 1em; /* Texto um pouco maior para facilitar leitura */
+  /*}
+  */
+  .grid {
     flex-direction: column; /* Em vez de lado a lado (row), fica um sobre o outro */
     gap: 15px; /* Espaço vertical entre as listas de marcas */
   }
