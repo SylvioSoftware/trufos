@@ -303,12 +303,13 @@ footer a:hover {
   }
 
   /* Garante que ele apareça quando o LI for tocado */
+  /*
   nav li:hover .dropdown,
   nav li:active .dropdown {
     display: block;
     opacity: 1;
   }
-
+*/
   /* Melhora o espaçamento para o dedo não clicar errado */
   .dropdown a {
     padding: 15px 20px; /* Aumenta a área de toque no celular */
