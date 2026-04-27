@@ -1,0 +1,20 @@
+<ul id="lista-arquivos">
+  Carregando arquivos...
+</ul>
+
+<script>
+  const repo = "SylvioSoftware/trufos"; // Ajuste aqui
+  const path = "dev";
+
+  fetch(`https://api.github.com/repos/${repo}/contents/${path}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const lista = document.getElementById("lista-arquivos");
+      lista.innerHTML = "";
+      data.forEach((file) => {
+        if (file.name.endsWith(".html") && file.name !== "index.html") {
+          lista.innerHTML += `<li><a href="${file.name}">${file.name}</a></li>`;
+        }
+      });
+    });
+</script>

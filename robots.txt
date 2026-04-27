@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /desenvolvimento/
+Disallow: /dev/
 
 Sitemap: https://www.trufos.com.br/sitemap.xml
