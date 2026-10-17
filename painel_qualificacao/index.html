@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            <!-- BLOCOS EM 2 COLUNAS (Lado a Lado no PC, Empilhados no Mobile) -->
+            <!-- BLOCOS EM 2 COLUNAS -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 
                 <!-- COLUNA 1: Bloco T11 a T17 -->
@@ -121,7 +121,6 @@
                 const nomeExibicao = idCanal.toUpperCase();
                 const html = `
                     <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex items-center justify-between">
-                        <!-- Nome do Sensor -->
                         <div class="flex items-center space-x-2">
                             <span class="text-xs font-extrabold text-slate-800 w-8">${nomeExibicao}</span>
                             <div class="flex items-center space-x-2 border-l pl-2 border-slate-300">
@@ -134,7 +133,6 @@
                             </div>
                         </div>
 
-                        <!-- Leituras de Temp e F0 com suporte a cores dinâmicas -->
                         <div class="flex space-x-2">
                             <div id="box-temp-${idCanal}" class="bg-white px-3 py-1 rounded-md border border-slate-200 text-center min-w-[90px] transition-colors">
                                 <span class="block text-[9px] text-slate-400 uppercase font-bold">Temp (°C)</span>
@@ -169,8 +167,10 @@
             if (sucesso) {
                 document.getElementById('card-login').classList.add('hidden');
                 document.getElementById('card-monitor').classList.remove('hidden');
-                document.getElementById('status-conexao').innerText = 'Online (5s)';
-                document.getElementById('status-conexao.className = 'text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full font-medium';
+                
+                const elStatus = document.getElementById('status-conexao');
+                elStatus.innerText = 'Online (5s)';
+                elStatus.className = 'text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full font-medium';
 
                 if (intervalId) clearInterval(intervalId);
                 intervalId = setInterval(buscarUltimaLeitura, 5000);
@@ -207,7 +207,6 @@
                     const todosCanais = [...canaisBloco1, ...canaisBloco2];
                     let valoresAtivos = [];
 
-                    // 1ª Passada: Atualiza valores e coleta os ativos para achar Mín e Máx
                     todosCanais.forEach(idCanal => {
                         const tempVal = Number(d[idCanal] ?? d[`ch_${idCanal}`] ?? 0);
                         const f0Val = Number(d[`f0_${idCanal}`] ?? 0);
@@ -219,7 +218,6 @@
                         if(elTemp) elTemp.innerText = tempVal.toFixed(2);
                         if(elF0) elF0.innerText = f0Val.toFixed(2);
 
-                        // Reseta cores dos containers
                         const boxTemp = document.getElementById(`box-temp-${idCanal}`);
                         boxTemp.className = "bg-white px-3 py-1 rounded-md border border-slate-200 text-center min-w-[90px]";
                         elTemp.className = "text-sm font-bold font-mono text-slate-800";
@@ -229,7 +227,6 @@
                         }
                     });
 
-                    // Identifica Mínima (Verde) e Máxima (Vermelho) entre os ativados
                     if (valoresAtivos.length > 0) {
                         valoresAtivos.sort((a, b) => a.temp - b.temp);
                         const menorObj = valoresAtivos[0];
@@ -237,14 +234,12 @@
 
                         document.getElementById('val-temp-minmax').innerText = `${menorObj.temp.toFixed(1)} / ${maiorObj.temp.toFixed(1)} °C`;
 
-                        // Aplica destaque visual na Menor Temp (Verde)
                         if (valoresAtivos.length > 1) {
                             const boxMin = document.getElementById(`box-temp-${menorObj.id}`);
                             const txtMin = document.getElementById(`${menorObj.id}-temp`);
                             boxMin.className = "bg-emerald-50 px-3 py-1 rounded-md border border-emerald-300 text-center min-w-[90px]";
                             txtMin.className = "text-sm font-bold font-mono text-emerald-700";
 
-                            // Aplica destaque visual na Maior Temp (Vermelho)
                             const boxMax = document.getElementById(`box-temp-${maiorObj.id}`);
                             const txtMax = document.getElementById(`${maiorObj.id}-temp`);
                             boxMax.className = "bg-rose-50 px-3 py-1 rounded-md border border-rose-300 text-center min-w-[90px]";
