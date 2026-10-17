@@ -8,94 +8,95 @@
     <link rel="icon" href="../img/Favicon.ico" type="image/x-icon">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Ajuste compacto para caber tudo na tela sem rolagem */
-        body { overflow-x: hidden; }
-        .compact-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
-        @media (max-width: 1024px) {
-            .compact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-    </style>
 </head>
-<body class="bg-slate-100 h-screen flex flex-col justify-between text-slate-900 font-sans p-2">
+<body class="bg-slate-100 min-h-screen flex flex-col justify-between text-slate-900 font-sans p-3">
 
-    <!-- Header Compacto -->
-    <header class="bg-slate-900 text-white px-4 py-2 rounded-lg shadow flex justify-between items-center">
+    <!-- Header -->
+    <header class="bg-slate-900 text-white px-5 py-3 rounded-xl shadow-md flex justify-between items-center max-w-7xl mx-auto w-full">
         <div class="flex items-center space-x-3">
-            <img src="../img/logo.png" alt="TRUFOS" class="h-8 object-contain bg-white px-1 rounded">
-            <h1 class="text-sm font-bold tracking-wide">Monitor Térmico</h1>
+            <img src="../img/logo.png" alt="TRUFOS" class="h-9 object-contain bg-white px-1.5 py-0.5 rounded">
+            <h1 class="text-base font-bold tracking-wide">Monitor Térmico de Autoclave</h1>
         </div>
-        <div class="flex items-center space-x-2">
-            <span id="status-conexao" class="text-[10px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-2 py-0.5 rounded-full">Aguardando PIN</span>
-            <button onclick="location.reload()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700">Sair</button>
+        <div class="flex items-center space-x-3">
+            <span id="status-conexao" class="text-xs bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-3 py-1 rounded-full font-medium">Aguardando PIN</span>
+            <button onclick="location.reload()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 font-medium">Sair</button>
         </div>
     </header>
 
-    <main class="flex-1 flex flex-col justify-center max-w-7xl mx-auto w-full py-1">
+    <main class="flex-1 max-w-7xl mx-auto w-full py-4 space-y-4">
 
         <!-- CARD DE LOGIN / PIN -->
-        <div id="card-login" class="max-w-sm mx-auto bg-white rounded-xl shadow-lg border border-slate-300 p-6 my-auto">
-            <h2 class="text-lg font-bold text-center mb-1">Acesso ao Monitor</h2>
-            <p class="text-xs text-slate-500 text-center mb-4">Digite o PIN de 6 dígitos recebido no WhatsApp.</p>
+        <div id="card-login" class="max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-slate-300 p-8 my-16">
+            <h2 class="text-xl font-bold text-center mb-1 text-slate-800">Acesso ao Monitor</h2>
+            <p class="text-xs text-slate-500 text-center mb-6">Digite o PIN de 6 dígitos recebido no WhatsApp.</p>
             
-            <form id="form-pin" onsubmit="iniciarMonitoramento(event)" class="space-y-3">
+            <form id="form-pin" onsubmit="iniciarMonitoramento(event)" class="space-y-4">
                 <div>
                     <input type="text" id="input-pin" maxlength="6" placeholder="000000" required 
-                        class="w-full text-center text-2xl tracking-widest font-mono py-2 border-2 border-slate-300 rounded-lg focus:border-blue-600 focus:outline-none">
+                        class="w-full text-center text-3xl tracking-widest font-mono py-3 border-2 border-slate-300 rounded-xl focus:border-blue-600 focus:outline-none">
                 </div>
-                <div id="msg-erro" class="hidden text-[11px] text-red-600 bg-red-50 border border-red-200 p-2 rounded text-center"></div>
+                <div id="msg-erro" class="hidden text-xs text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg text-center font-medium"></div>
                 <button type="submit" id="btn-acessar" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2.5 rounded-lg shadow">
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-3 rounded-xl shadow transition">
                     Conectar Monitor
                 </button>
             </form>
         </div>
 
         <!-- PAINEL MONITOR (Escondido por padrão) -->
-        <div id="card-monitor" class="hidden space-y-2">
+        <div id="card-monitor" class="hidden space-y-4">
             
-            <!-- Barra Superior Compacta (Sem PT-100, 5 blocos) -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
-                <div class="bg-white p-2 rounded shadow border text-center">
-                    <span class="block text-[10px] font-semibold text-slate-500">Pressão (bar)</span>
-                    <span id="val-pressao" class="text-lg font-bold font-mono text-blue-600">0.00</span>
+            <!-- Barra Superior de Parâmetros Gerais -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <span class="block text-xs font-bold text-slate-500 uppercase">Pressão / Tsat</span>
+                    <span class="text-lg font-bold font-mono text-blue-600 mt-1 block">
+                        <span id="val-pressao">0.00</span> bar <span class="text-slate-400 font-normal">|</span> <span id="val-tsat" class="text-slate-800">0.00</span>°C
+                    </span>
                 </div>
-                <div class="bg-white p-2 rounded shadow border text-center">
-                    <span class="block text-[10px] font-semibold text-slate-500">Tsat (°C)</span>
-                    <span id="val-tsat" class="text-lg font-bold font-mono text-slate-800">0.00</span>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <span class="block text-xs font-bold text-slate-500 uppercase">Status do Ciclo</span>
+                    <span id="val-status" class="text-sm font-extrabold uppercase text-emerald-600 mt-1 block">Aguardando</span>
                 </div>
-                <div class="bg-white p-2 rounded shadow border text-center">
-                    <span class="block text-[10px] font-semibold text-slate-500">Status Ciclo</span>
-                    <span id="val-status" class="text-xs font-bold uppercase text-emerald-600 mt-1 block">Aguardando</span>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <span class="block text-xs font-bold text-slate-500 uppercase">Mín / Máx (Ativados)</span>
+                    <span id="val-temp-minmax" class="text-base font-extrabold font-mono text-slate-800 mt-1 block">0.0 / 0.0 °C</span>
                 </div>
-                <div class="bg-white p-2 rounded shadow border text-center">
-                    <span class="block text-[10px] font-semibold text-slate-500">Temp. Mín / Máx (Ativados)</span>
-                    <span id="val-temp-minmax" class="text-xs font-bold font-mono text-slate-800 mt-1 block">0.0 / 0.0</span>
-                </div>
-                <div class="bg-white p-2 rounded shadow border text-center col-span-2 md:col-span-1">
-                    <span class="block text-[10px] font-semibold text-slate-500">Última Leitura</span>
-                    <span id="val-timestamp" class="text-[11px] font-mono text-slate-600 mt-1 block">--/--/---- --:--:--</span>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <span class="block text-xs font-bold text-slate-500 uppercase">Última Leitura</span>
+                    <span id="val-timestamp" class="text-xs font-mono font-semibold text-slate-600 mt-1.5 block">--/--/---- --:--:--</span>
                 </div>
             </div>
 
-            <!-- BLOCO 1: Sensores T11 a T17 -->
-            <div class="bg-white p-2 rounded-lg shadow border border-slate-300">
-                <div class="text-[11px] font-bold text-slate-700 mb-1 border-b pb-0.5">Bloco 1 — Termopares T11 a T17</div>
-                <div class="compact-grid" id="grid-bloco1"></div>
-            </div>
+            <!-- BLOCOS EM 2 COLUNAS (Lado a Lado no PC, Empilhados no Mobile) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                
+                <!-- COLUNA 1: Bloco T11 a T17 -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="text-xs font-bold text-slate-700 uppercase border-b pb-2 flex justify-between items-center">
+                        <span>Bloco 1 — Termopares T11 a T17</span>
+                        <span class="text-[10px] text-slate-400 font-normal">📈 Gráfico | 🌡️ Cálculo Mín/Máx</span>
+                    </div>
+                    <div id="grid-bloco1" class="space-y-2"></div>
+                </div>
 
-            <!-- BLOCO 2: Sensores T21 a T27 -->
-            <div class="bg-white p-2 rounded-lg shadow border border-slate-300">
-                <div class="text-[11px] font-bold text-slate-700 mb-1 border-b pb-0.5">Bloco 2 — Termopares T21 a T27</div>
-                <div class="compact-grid" id="grid-bloco2"></div>
+                <!-- COLUNA 2: Bloco T21 a T27 -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="text-xs font-bold text-slate-700 uppercase border-b pb-2 flex justify-between items-center">
+                        <span>Bloco 2 — Termopares T21 a T27</span>
+                        <span class="text-[10px] text-slate-400 font-normal">📈 Gráfico | 🌡️ Cálculo Mín/Máx</span>
+                    </div>
+                    <div id="grid-bloco2" class="space-y-2"></div>
+                </div>
+
             </div>
 
         </div>
 
     </main>
 
-    <!-- Footer Simples -->
-    <footer class="text-center text-[10px] text-slate-500 py-1">
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-3">
         TRUFOS — Qualificação Térmica Automatizada
     </footer>
 
@@ -119,30 +120,29 @@
             listaCanais.forEach(idCanal => {
                 const nomeExibicao = idCanal.toUpperCase();
                 const html = `
-                    <div class="bg-slate-50 p-1.5 rounded border border-slate-200">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-bold text-slate-800">${nomeExibicao}</span>
-                            <div class="flex items-center space-x-1.5">
-                                <!-- Checkbox para Gráfico + Ícone -->
-                                <label class="cursor-pointer flex items-center" title="Selecionar para Gráfico">
-                                    <input type="checkbox" value="${idCanal}" class="w-3 h-3 text-blue-600 rounded border-slate-300">
-                                    <span class="ml-0.5 text-xs">📈</span>
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex items-center justify-between">
+                        <!-- Nome do Sensor -->
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-extrabold text-slate-800 w-8">${nomeExibicao}</span>
+                            <div class="flex items-center space-x-2 border-l pl-2 border-slate-300">
+                                <label class="cursor-pointer flex items-center text-xs text-slate-600 hover:text-blue-600" title="Selecionar para Gráfico">
+                                    <input type="checkbox" value="${idCanal}" class="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 mr-1"> 📈
                                 </label>
-                                <!-- Checkbox Enable para Mín/Máx -->
-                                <label class="cursor-pointer flex items-center" title="Participar do Cálculo Mín/Máx">
-                                    <input type="checkbox" id="enable-${idCanal}" checked class="w-3 h-3 text-emerald-600 rounded border-slate-300">
-                                    <span class="text-[9px] text-emerald-700 font-bold ml-0.5">En</span>
+                                <label class="cursor-pointer flex items-center text-xs text-slate-600 hover:text-emerald-600" title="Participar do Cálculo Mín/Máx (ISO)">
+                                    <input type="checkbox" id="enable-${idCanal}" checked class="w-3.5 h-3.5 text-emerald-600 rounded border-slate-300 mr-1"> 🌡️
                                 </label>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-1 text-center">
-                            <div class="bg-white p-1 rounded border">
-                                <span class="block text-[8px] text-slate-400 uppercase font-bold">Temp</span>
-                                <span id="${idCanal}-temp" class="text-xs font-bold font-mono text-slate-800">0.00</span>
+
+                        <!-- Leituras de Temp e F0 com suporte a cores dinâmicas -->
+                        <div class="flex space-x-2">
+                            <div id="box-temp-${idCanal}" class="bg-white px-3 py-1 rounded-md border border-slate-200 text-center min-w-[90px] transition-colors">
+                                <span class="block text-[9px] text-slate-400 uppercase font-bold">Temp (°C)</span>
+                                <span id="${idCanal}-temp" class="text-sm font-bold font-mono text-slate-800">0.00</span>
                             </div>
-                            <div class="bg-white p-1 rounded border">
-                                <span class="block text-[8px] text-slate-400 uppercase font-bold">F₀</span>
-                                <span id="${idCanal}-f0" class="text-xs font-bold font-mono text-emerald-700">0.00</span>
+                            <div id="box-f0-${idCanal}" class="bg-white px-3 py-1 rounded-md border border-slate-200 text-center min-w-[90px] transition-colors">
+                                <span class="block text-[9px] text-slate-400 uppercase font-bold">Letalidade (F₀)</span>
+                                <span id="${idCanal}-f0" class="text-sm font-bold font-mono text-emerald-700">0.00</span>
                             </div>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                 document.getElementById('card-login').classList.add('hidden');
                 document.getElementById('card-monitor').classList.remove('hidden');
                 document.getElementById('status-conexao').innerText = 'Online (5s)';
-                document.getElementById('status-conexao').className = 'text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full';
+                document.getElementById('status-conexao.className = 'text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full font-medium';
 
                 if (intervalId) clearInterval(intervalId);
                 intervalId = setInterval(buscarUltimaLeitura, 5000);
@@ -204,31 +204,54 @@
                         document.getElementById('val-timestamp').innerText = dataObj.toLocaleString('pt-BR');
                     }
 
-                    let minTemp = 999, maxTemp = -999;
                     const todosCanais = [...canaisBloco1, ...canaisBloco2];
+                    let valoresAtivos = [];
 
+                    // 1ª Passada: Atualiza valores e coleta os ativos para achar Mín e Máx
                     todosCanais.forEach(idCanal => {
-                        const tempVal = d[idCanal] ?? d[`ch_${idCanal}`] ?? 0;
-                        const f0Val = d[`f0_${idCanal}`] ?? 0;
+                        const tempVal = Number(d[idCanal] ?? d[`ch_${idCanal}`] ?? 0);
+                        const f0Val = Number(d[`f0_${idCanal}`] ?? 0);
 
                         const elTemp = document.getElementById(`${idCanal}-temp`);
                         const elF0 = document.getElementById(`${idCanal}-f0`);
                         const elEnable = document.getElementById(`enable-${idCanal}`);
 
-                        if(elTemp) elTemp.innerText = Number(tempVal).toFixed(2);
-                        if(elF0) elF0.innerText = Number(f0Val).toFixed(2);
+                        if(elTemp) elTemp.innerText = tempVal.toFixed(2);
+                        if(elF0) elF0.innerText = f0Val.toFixed(2);
 
-                        // Considera para Mín/Máx apenas se o checkbox "Enable" estiver marcado
+                        // Reseta cores dos containers
+                        const boxTemp = document.getElementById(`box-temp-${idCanal}`);
+                        boxTemp.className = "bg-white px-3 py-1 rounded-md border border-slate-200 text-center min-w-[90px]";
+                        elTemp.className = "text-sm font-bold font-mono text-slate-800";
+
                         if (elEnable && elEnable.checked && tempVal > 0) {
-                            if (tempVal < minTemp) minTemp = tempVal;
-                            if (tempVal > maxTemp) maxTemp = tempVal;
+                            valoresAtivos.push({ id: idCanal, temp: tempVal });
                         }
                     });
 
-                    if (minTemp !== 999) {
-                        document.getElementById('val-temp-minmax').innerText = `${minTemp.toFixed(1)} / ${maxTemp.toFixed(1)}`;
+                    // Identifica Mínima (Verde) e Máxima (Vermelho) entre os ativados
+                    if (valoresAtivos.length > 0) {
+                        valoresAtivos.sort((a, b) => a.temp - b.temp);
+                        const menorObj = valoresAtivos[0];
+                        const maiorObj = valoresAtivos[valoresAtivos.length - 1];
+
+                        document.getElementById('val-temp-minmax').innerText = `${menorObj.temp.toFixed(1)} / ${maiorObj.temp.toFixed(1)} °C`;
+
+                        // Aplica destaque visual na Menor Temp (Verde)
+                        if (valoresAtivos.length > 1) {
+                            const boxMin = document.getElementById(`box-temp-${menorObj.id}`);
+                            const txtMin = document.getElementById(`${menorObj.id}-temp`);
+                            boxMin.className = "bg-emerald-50 px-3 py-1 rounded-md border border-emerald-300 text-center min-w-[90px]";
+                            txtMin.className = "text-sm font-bold font-mono text-emerald-700";
+
+                            // Aplica destaque visual na Maior Temp (Vermelho)
+                            const boxMax = document.getElementById(`box-temp-${maiorObj.id}`);
+                            const txtMax = document.getElementById(`${maiorObj.id}-temp`);
+                            boxMax.className = "bg-rose-50 px-3 py-1 rounded-md border border-rose-300 text-center min-w-[90px]";
+                            txtMax.className = "text-sm font-bold font-mono text-rose-700";
+                        }
                     } else {
-                        document.getElementById('val-temp-minmax').innerText = `0.0 / 0.0`;
+                        document.getElementById('val-temp-minmax').innerText = `0.0 / 0.0 °C`;
                     }
 
                     return true;
