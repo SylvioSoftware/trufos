@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qualificação Térmica | TRUFOS</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans text-slate-800">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 text-white py-4 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wide">TRUFOS <span class="text-blue-400 font-normal">| Qualificação Térmica</span></h1>
+            <span class="text-xs bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full text-slate-300">Área do Cliente</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <!-- CARD DE LOGIN / PIN -->
+        <div id="card-login" class="max-w-md mx-auto bg-white rounded-xl shadow-lg border border-slate-200 p-6 my-12">
+            <h2 class="text-2xl font-bold text-slate-900 text-center mb-2">Acessar Relatório</h2>
+            <p class="text-sm text-slate-500 text-center mb-6">Digite o PIN de 6 dígitos recebido no grupo do WhatsApp.</p>
+            
+            <form id="form-pin" onsubmit="validarPin(event)" class="space-y-4">
+                <div>
+                    <label for="input-pin" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Código de Acesso</label>
+                    <input type="text" id="input-pin" maxlength="6" placeholder="000000" required 
+                        class="w-full text-center text-3xl tracking-widest font-mono py-3 border-2 border-slate-300 rounded-lg focus:border-blue-600 focus:outline-none transition">
+                </div>
+                
+                <div id="msg-erro" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg text-center"></div>
+
+                <button type="submit" id="btn-acessar" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow transition duration-200 flex justify-center items-center">
+                    Acessar Painel
+                </button>
+            </form>
+        </div>
+
+        <!-- DASHBOARD (Inicia Escondido) -->
+        <div id="card-dashboard" class="hidden space-y-6">
+            
+            <!-- Banner de Boas-Vindas -->
+            <div class="bg-white p-6 rounded-xl shadow border border-slate-200 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">Medições de Qualificação</h2>
+                    <p class="text-sm text-slate-500">Exibindo os últimos dados registrados pelo FieldLogger</p>
+                </div>
+                <button onclick="location.reload()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-md font-medium border border-slate-300 transition">
+                    Sair / Atualizar
+                </button>
+            </div>
+
+            <!-- Gráfico de Temperatura / Pressão -->
+            <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
+                <h3 class="text-md font-semibold text-slate-800 mb-4">Gráfico Térmico</h3>
+                <div class="relative w-full h-72">
+                    <canvas id="grafico-medicoes"></canvas>
+                </div>
+            </div>
+
+            <!-- Tabela de Dados -->
+            <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-200">
+                    <h3 class="text-md font-semibold text-slate-800">Histórico de Leituras</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 text-slate-700 uppercase text-xs">
+                            <tr>
+                                <th class="px-6 py-3">Data / Hora</th>
+                                <th class="px-6 py-3">Temperatura (°C)</th>
+                                <th class="px-6 py-3">Pressão (bar)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-corpo" class="divide-y divide-slate-200">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // ALTERE AQUI PARA O LINK DO SEU WEBHOOK NO N8N
+        const WEBHOOK_URL = 'https://n8n.trufos.com.br/webhook/validar-pin-painel';
+
+        let chartInstance = null;
+
+        async function validarPin(event) {
+            event.preventDefault();
+            
+            const pinInput = document.getElementById('input-pin').value.trim();
+            const msgErro = document.getElementById('msg-erro');
+            const btnAcessar = document.getElementById('btn-acessar');
+
+            msgErro.classList.add('hidden');
+            btnAcessar.disabled = true;
+            btnAcessar.innerText = 'Validando...';
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pin: pinInput })
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.sucesso && resultado.dados.length > 0) {
+                    // Esconde login e mostra o dashboard
+                    document.getElementById('card-login').classList.add('hidden');
+                    document.getElementById('card-dashboard').classList.remove('hidden');
+
+                    renderizarDados(resultado.dados);
+                } else {
+                    msgErro.innerText = resultado.mensagem || 'PIN inválido ou expirado.';
+                    msgErro.classList.remove('hidden');
+                }
+            } catch (error) {
+                msgErro.innerText = 'Erro ao conectar ao servidor. Tente novamente.';
+                msgErro.classList.remove('hidden');
+            } finally {
+                btnAcessar.disabled = false;
+                btnAcessar.innerText = 'Acessar Painel';
+            }
+        }
+
+        function renderizarDados(medicoes) {
+            const tabelaCorpo = document.getElementById('tabela-corpo');
+            tabelaCorpo.innerHTML = '';
+
+            // Dados para o Gráfico (ordem cronológica)
+            const medicoesOrdenadas = [...medicoes].reverse();
+            const labels = medicoesOrdenadas.map(m => new Date(m.timestamp_fl).toLocaleTimeString('pt-BR'));
+            const temperaturas = medicoesOrdenadas.map(m => m.temperatura);
+            const pressoes = medicoesOrdenadas.map(m => m.pressao);
+
+            // Preenche Tabela
+            medicoes.forEach(m => {
+                const dataFormatada = new Date(m.timestamp_fl).toLocaleString('pt-BR');
+                const row = `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-6 py-4 font-mono text-xs">${dataFormatada}</td>
+                        <td class="px-6 py-4 font-semibold text-slate-900">${m.temperatura ? m.temperatura.toFixed(2) + ' °C' : '-'}</td>
+                        <td class="px-6 py-4">${m.pressao ? m.pressao.toFixed(2) + ' bar' : '-'}</td>
+                    </tr>
+                `;
+                tabelaCorpo.innerHTML += row;
+            });
+
+            // Plota Gráfico
+            const ctx = document.getElementById('grafico-medicoes').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Temperatura (°C)',
+                            data: temperaturas,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Pressão (bar)',
+                            data: pressoes,
+                            borderColor: '#059669',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: false }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
