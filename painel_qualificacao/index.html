@@ -77,7 +77,6 @@
                         <span>Bloco 1 — Termopares T11 a T17</span>
                         <span class="text-[10px] text-slate-400 font-normal">📈 Gráfico | 🌡️ Mín/Máx</span>
                     </div>
-                    <!-- Grelha Interna de 2 Colunas -->
                     <div id="grid-bloco1" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                 </div>
 
@@ -87,7 +86,6 @@
                         <span>Bloco 2 — Termopares T21 a T27</span>
                         <span class="text-[10px] text-slate-400 font-normal">📈 Gráfico | 🌡️ Mín/Máx</span>
                     </div>
-                    <!-- Grelha Interna de 2 Colunas -->
                     <div id="grid-bloco2" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                 </div>
 
@@ -244,4 +242,21 @@
 
                             const boxMax = document.getElementById(`box-temp-${maiorObj.id}`);
                             const txtMax = document.getElementById(`${maiorObj.id}-temp`);
-                            boxMax.className = "bg-rose-50 px-2 py-1 rounded-md border border-rose-300 text-center min-w
+                            boxMax.className = "bg-rose-50 px-2 py-1 rounded-md border border-rose-300 text-center min-w-[75px]";
+                            txtMax.className = "text-xs font-bold font-mono text-rose-700";
+                        }
+                    } else {
+                        document.getElementById('val-temp-minmax').innerText = `0.0 / 0.0 °C`;
+                    }
+
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Erro na atualização:', error);
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>
