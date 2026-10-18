@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico Térmico Interativo | TRUFOS</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js + Plugin de Anotações (para desenhar as linhas de fase) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans p-3">
+
+    <!-- Header do Gráfico -->
+    <header class="bg-slate-800 border border-slate-700 px-4 py-3 rounded-xl shadow-md flex flex-wrap justify-between items-center gap-3 max-w-7xl mx-auto w-full">
+        <div class="flex items-center space-x-3">
+            <img src="../img/logo.png" alt="TRUFOS" class="h-8 object-contain bg-white px-1.5 py-0.5 rounded">
+            <div>
+                <h1 id="titulo-grafico" class="text-sm font-bold tracking-wide text-white">Análise Térmica do Ciclo</h1>
+                <span id="subtitulo-ciclo" class="text-xs text-slate-400">Carregando histórico...</span>
+            </div>
+        </div>
+
+        <!-- Botões de Toggle para Eixos Visíveis (Persistidos via localStorage) -->
+        <div class="flex flex-wrap items-center gap-2 bg-slate-900/60 p-1.5 rounded-lg border border-slate-700 text-xs">
+            <span class="text-slate-400 font-bold px-1">Eixos:</span>
+            <button onclick="toggleEixo('tsat')" id="btn-tsat" class="px-2.5 py-1 rounded font-semibold transition border border-blue-500/30 bg-blue-500/20 text-blue-300">
+                Tsat
+            </button>
+            <button onclick="toggleEixo('pressao')" id="btn-pressao" class="px-2.5 py-1 rounded font-semibold transition border border-cyan-500/30 bg-cyan-500/20 text-cyan-300">
+                Pressão (PSI)
+            </button>
+            <button onclick="toggleEixo('f0')" id="btn-f0" class="px-2.5 py-1 rounded font-semibold transition border border-emerald-500/30 bg-emerald-500/20 text-emerald-300">
+                Letalidade (F₀)
+            </button>
+        </div>
+    </header>
+
+    <!-- Barra de Navegação Rápida por Abas / Canais -->
+    <div class="max-w-7xl mx-auto w-full py-2">
+        <div id="container-abas" class="flex items-center space-x-1.5 overflow-x-auto pb-1.5 text-xs no-scrollbar">
+            <!-- As abas serão injetadas via JavaScript -->
+        </div>
+    </div>
+
+    <!-- ÁREA DO GRÁFICO PRINCIPAL -->
+    <main class="flex-1 max-w-7xl mx-auto w-full bg-slate-950 p-4 rounded-xl border border-slate-800 shadow-inner flex flex-col justify-center relative min-h-[450px]">
+        <canvas id="meuGrafico" class="w-full h-full"></canvas>
+    </main>
+
+    <!-- Footer com Controle de Amostragem -->
+    <footer class="max-w-7xl mx-auto w-full py-2 text-xs text-slate-400 flex justify-between items-center">
+        <span>TRUFOS — Qualificação Térmica</span>
+        <div class="flex items-center space-x-2">
+            <span>Amostragem:</span>
+            <select id="select-amostragem" onchange="alterarAmostragem(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 rounded px-2 py-1 text-xs outline-none">
+                <option value="30" selected>30 segundos (Recomendado)</option>
+                <option value="15">15 segundos</option>
+                <option value="5">5 segundos (Bruto)</option>
+            </select>
+        </div>
+    </footer>
+
+    <script>
+        const WEBHOOK_HISTORICO_URL = 'https://n8n.trufos.com.br/webhook/validar-pin-painel'; // Webhook do n8n que retorna os registros
+        
+        let chartInstance = null;
+        let dadosHistoricos = [];
+        let pinAtual = '';
+        let canalFoco = 'COMPARA'; // 'COMPARA' para todos selecionados ou 't11', 't12', etc.
+        let intervaloAmostragemSegundos = 30; // Padrão: 30 segundos de sub-amostragem para leveza de renderização
+
+        // Estado inicial das preferências de exibição de eixos (carregado do localStorage)
+        let preferencias = {
+            tsat: localStorage.getItem('trufos_pref_tsat') !== 'false',
+            pressao: localStorage.getItem('trufos_pref_pressao') !== 'false',
+            f0: localStorage.getItem('trufos_pref_f0') === 'true' // Padrão false para não poluir
+        };
+
+        const todosCanais = [
+            't11', 't12', 't13', 't14', 't15', 't16', 't17',
+            't21', 't22', 't23', 't24', 't25', 't26', 't27'
+        ];
+
+        // Executa ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            pinAtual = urlParams.get('pin') || '';
+            
+            if(urlParams.has('foco')) {
+                canalFoco = urlParams.get('foco').toLowerCase();
+            }
+
+            atualizarBotoesToggleUI();
+            gerarBarraAbas();
+            carregarHistoricoCiclo();
+        });
+
+        // Alterna o estado do eixo e salva no localStorage
+        function toggleEixo(eixo) {
+            preferencias[eixo] = !preferencias[eixo];
+            localStorage.setItem(`trufos_pref_${eixo}`, preferencias[eixo]);
+            atualizarBotoesToggleUI();
+            renderizarGrafico();
+        }
+
+        // Atualiza o visual dos botões no cabeçalho
+        function atualizarBotoesToggleUI() {
+            Object.keys(preferencias).forEach(eixo => {
+                const btn = document.getElementById(`btn-${eixo}`);
+                if (btn) {
+                    if (preferencias[eixo]) {
+                        btn.className = "px-2.5 py-1 rounded font-semibold transition border border-emerald-500/50 bg-emerald-500/20 text-emerald-300";
+                    } else {
+                        btn.className = "px-2.5 py-1 rounded font-semibold transition border border-slate-700 bg-slate-800 text-slate-500 line-through";
+                    }
+                }
+            });
+        }
+
+        // Renderiza as abas superiores de navegação rápida
+        function gerarBarraAbas() {
+            const container = document.getElementById('container-abas');
+            container.innerHTML = '';
+
+            // Aba "Visão Comparativa"
+            const btnGeral = document.createElement('button');
+            btnGeral.innerText = "📊 Visão Geral / Comparativo";
+            btnGeral.className = `px-3 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${canalFoco === 'COMPARA' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`;
+            btnGeral.onclick = () => mudarAba('COMPARA');
+            container.appendChild(btnGeral);
+
+            // Abas individuais T11 a T27
+            todosCanais.forEach(c => {
+                const btn = document.createElement('button');
+                btn.innerText = c.toUpperCase();
+                btn.className = `px-3 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${canalFoco === c ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`;
+                btn.onclick = () => mudarAba(c);
+                container.appendChild(btn);
+            });
+        }
+
+        function mudarAba(novoFoco) {
+            canalFoco = novoFoco;
+            gerarBarraAbas();
+            renderizarGrafico();
+        }
+
+        function alterarAmostragem(valor) {
+            intervaloAmostragemSegundos = Number(valor);
+            renderizarGrafico();
+        }
+
+        // Busca todos os pontos históricos no backend n8n
+        async function carregarHistoricoCiclo() {
+            try {
+                const response = await fetch(WEBHOOK_HISTORICO_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pin: pinAtual, historico: true })
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.sucesso && resultado.dados.length > 0) {
+                    // Ordena cronologicamente do mais antigo para o mais recente
+                    dadosHistoricos = resultado.dados.sort((a, b) => new Date(a.timestamp_fl) - new Date(b.timestamp_fl));
+
+                    const primeiro = dadosHistoricos[0];
+                    const nomeProc = primeiro.processo_id ?? primeiro.nome_ciclo ?? 'Ciclo de Qualificação';
+                    
+                    document.getElementById('titulo-grafico').innerText = `${nomeProc} — Análise Térmica`;
+                    document.getElementById('subtitulo-ciclo').innerText = `Total de Registros Brutos: ${dadosHistoricos.length} medições`;
+
+                    renderizarGrafico();
+                }
+            } catch (err) {
+                console.error("Erro ao carregar histórico do ciclo:", err);
+            }
+        }
+
+        // Sub-amostragem inteligente dos dados (agrupa pontos por intervalo de N segundos)
+        function filtrarPorAmostragem(dados, passoSegundos) {
+            if (passoSegundos <= 5) return dados; // Retorna dados brutos
+            
+            const filtrados = [];
+            let ultimoTimestamp = 0;
+
+            dados.forEach(ponto => {
+                const tsVal = ponto.timestamp_fl ?? ponto.created_at;
+                const tempoAtual = new Date(tsVal.replace('T', ' ')).getTime();
+
+                if (tempoAtual - ultimoTimestamp >= passoSegundos * 1000) {
+                    filtrados.push(ponto);
+                    ultimoTimestamp = tempoAtual;
+                }
+            });
+
+            return filtrados;
+        }
+
+        // Monta e renderiza o gráfico no Canvas via Chart.js
+        function renderizarGrafico() {
+            if (dadosHistoricos.length === 0) return;
+
+            const dadosFiltrados = filtrarPorAmostragem(dadosHistoricos, intervaloAmostragemSegundos);
+
+            // Rótulos do Eixo X (Horário HH:MM:SS)
+            const labelsX = dadosFiltrados.map(d => {
+                const ts = d.timestamp_fl ?? d.created_at;
+                const partes = ts.replace('T', ' ').split('.')[0].split(' ');
+                return partes.length >= 2 ? partes[1] : ts;
+            });
+
+            const datasets = [];
+            const anotacoesFases = {}; // Para desenhar as linhas de fase no gráfico
+
+            // Identificação e criação das Linhas Pontilhadas de Mudança de Fase
+            let ultimaFase = '';
+            dadosFiltrados.forEach((d, idx) => {
+                const faseAtual = d.fase ?? d.status_ciclo;
+                if (faseAtual && faseAtual !== ultimaFase) {
+                    ultimaFase = faseAtual;
+                    anotacoesFases[`linha_fase_${idx}`] = {
+                        type: 'line',
+                        xMin: idx,
+                        xMax: idx,
+                        borderColor: '#ef4444', // Cor vermelha para transição
+                        borderWidth: 2,
+                        borderDash: [6, 6],
+                        label: {
+                            display: true,
+                            content: faseAtual.toUpperCase(),
+                            backgroundColor: 'rgba(239, 68, 68, 0.85)',
+                            color: '#fff',
+                            font: { size: 10, weight: 'bold' },
+                            position: 'top'
+                        }
+                    };
+                }
+            });
+
+            // 1. DATASETS DE TEMPERATURA
+            if (canalFoco === 'COMPARA') {
+                // Desenha todos os canais ativados no gráfico comparativo
+                const cores = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#f97316'];
+                todosCanais.forEach((c, index) => {
+                    datasets.push({
+                        label: `Temp ${c.toUpperCase()} (°C)`,
+                        data: dadosFiltrados.map(d => Number(d[c] ?? d[`ch_${c}`] ?? 0)),
+                        borderColor: cores[index % cores.length],
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        yAxisID: 'yTemp'
+                    });
+                });
+            } else {
+                // Desenha apenas o canal focado em destaque (ex: T11)
+                datasets.push({
+                    label: `Temp ${canalFoco.toUpperCase()} (°C)`,
+                    data: dadosFiltrados.map(d => Number(d[canalFoco] ?? d[`ch_${canalFoco}`] ?? 0)),
+                    borderColor: '#f43f5e', // Rosa/Vermelho em destaque
+                    borderWidth: 2.5,
+                    pointRadius: 1,
+                    yAxisID: 'yTemp'
+                });
+
+                // Inclui a curva de F0 individual se o toggle de F0 estiver ativo
+                if (preferencias.f0) {
+                    datasets.push({
+                        label: `F₀ ${canalFoco.toUpperCase()}`,
+                        data: dadosFiltrados.map(d => Number(d[`f0_${canalFoco}`] ?? 0)),
+                        borderColor: '#10b981', // Verde
+                        borderWidth: 2,
+                        borderDash: [4, 4],
+                        pointRadius: 0,
+                        yAxisID: 'yF0'
+                    });
+                }
+            }
+
+            // 2. DATASET DE TSAT (Se ativado no toggle)
+            if (preferencias.tsat) {
+                datasets.push({
+                    label: 'Tsat (°C)',
+                    data: dadosFiltrados.map(d => Number(d.tsat ?? 0)),
+                    borderColor: '#60a5fa', // Azul claro
+                    borderWidth: 2,
+                    borderDash: [2, 2],
+                    pointRadius: 0,
+                    yAxisID: 'yTemp'
+                });
+            }
+
+            // 3. DATASET DE PRESSÃO (Se ativado no toggle)
+            if (preferencias.pressao) {
+                datasets.push({
+                    label: 'Pressão (PSI)',
+                    data: dadosFiltrados.map(d => Number(d.p21 ?? d.pressao ?? 0)),
+                    borderColor: '#06b6d4', // Ciano
+                    borderWidth: 1.5,
+                    pointRadius: 0,
+                    yAxisID: 'yPressao'
+                });
+            }
+
+            // Destrói instância anterior antes de criar a nova
+            if (chartInstance) chartInstance.destroy();
+
+            const ctx = document.getElementById('meuGrafico').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labelsX, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', font: { size: 11 } } },
+                        annotation: { annotations: anotacoesFases }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', maxTicksLimit: 12 }, grid: { color: '#1e293b' } },
+                        yTemp: {
+                            type: 'linear',
+                            position: 'left',
+                            title: { display: true, text: 'Temperatura (°C)', color: '#f43f5e' },
+                            ticks: { color: '#f43f5e' },
+                            grid: { color: '#1e293b' }
+                        },
+                        yPressao: {
+                            type: 'linear',
+                            position: 'right',
+                            display: preferencias.pressao,
+                            title: { display: true, text: 'Pressão (PSI)', color: '#06b6d4' },
+                            ticks: { color: '#06b6d4' },
+                            grid: { drawOnChartArea: false }
+                        },
+                        yF0: {
+                            type: 'linear',
+                            position: 'right',
+                            display: !canalFoco.includes('COMPARA') && preferencias.f0,
+                            title: { display: true, text: 'F₀', color: '#10b981' },
+                            ticks: { color: '#10b981' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
