@@ -1,41 +1,57 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor de Qualificação Térmica | TRUFOS</title>
+    <meta charset="UTF-8"> <!-- Define a codificação de caracteres como UTF-8 para suporte a acentos -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ajusta a largura para dispositivos móveis -->
+    <title>Monitor de Qualificação Térmica | TRUFOS</title> <!-- Título exibido na aba do navegador -->
+    
     <!-- Favicon -->
-    <link rel="icon" href="../img/Favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../img/Favicon.ico" type="image/x-icon"> <!-- Ícone da aba do navegador -->
+    
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Carrega a biblioteca Tailwind CSS para estilização rápida -->
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col justify-between text-slate-900 font-sans p-3">
+    <!-- Estrutura principal da página com fundo cinza-claro, preenchendo a altura total da tela -->
 
     <!-- Header -->
     <header class="bg-slate-900 text-white px-5 py-3 rounded-xl shadow-md flex justify-between items-center max-w-7xl mx-auto w-full">
+        <!-- Barra de cabeçalho superior escura -->
         <div class="flex items-center space-x-3">
-            <img src="../img/logo.png" alt="TRUFOS" class="h-9 object-contain bg-white px-1.5 py-0.5 rounded">
-            <h1 class="text-base font-bold tracking-wide">Monitor Térmico de Autoclave</h1>
+            <img src="../img/logo.png" alt="TRUFOS" class="h-9 object-contain bg-white px-1.5 py-0.5 rounded"> <!-- Logotipo da marca -->
+            <div>
+                <h1 class="text-base font-bold tracking-wide leading-tight">Monitor Térmico de Autoclave</h1> <!-- Título da aplicação -->
+                <!-- Identificador / Nome do Ciclo Atual no Cabeçalho -->
+                <span id="nome-ciclo-header" class="text-xs text-slate-400 font-normal hidden sm:inline-block">Ciclo: <strong id="val-nome-ciclo" class="text-slate-200">-</strong></span>
+            </div>
         </div>
         <div class="flex items-center space-x-3">
+            <!-- Indicador do status de conexão com o backend -->
             <span id="status-conexao" class="text-xs bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-3 py-1 rounded-full font-medium">Aguardando PIN</span>
+            <!-- Botão para recarregar a página e desconectar -->
             <button onclick="location.reload()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 font-medium">Sair</button>
         </div>
     </header>
 
     <main class="flex-1 max-w-7xl mx-auto w-full py-4 space-y-4">
+        <!-- Área de conteúdo principal -->
 
         <!-- CARD DE LOGIN / PIN -->
         <div id="card-login" class="max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-slate-300 p-8 my-16">
+            <!-- Formulário de autenticação por PIN -->
             <h2 class="text-xl font-bold text-center mb-1 text-slate-800">Acesso ao Monitor</h2>
             <p class="text-xs text-slate-500 text-center mb-6">Digite o PIN de 6 dígitos recebido no WhatsApp.</p>
             
+            <!-- Intercepta o envio do formulário chamando a função JavaScript iniciarMonitoramento -->
             <form id="form-pin" onsubmit="iniciarMonitoramento(event)" class="space-y-4">
                 <div>
+                    <!-- Campo para inserção do PIN com limite de 6 caracteres -->
                     <input type="text" id="input-pin" maxlength="6" placeholder="000000" required 
                         class="w-full text-center text-3xl tracking-widest font-mono py-3 border-2 border-slate-300 rounded-xl focus:border-blue-600 focus:outline-none">
                 </div>
+                <!-- Div oculta para exibir mensagens de erro do PIN -->
                 <div id="msg-erro" class="hidden text-xs text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg text-center font-medium"></div>
+                <!-- Botão para submeter o formulário -->
                 <button type="submit" id="btn-acessar" 
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-3 rounded-xl shadow transition">
                     Conectar Monitor
@@ -43,49 +59,55 @@
             </form>
         </div>
 
-        <!-- PAINEL MONITOR (Escondido por padrão) -->
+        <!-- PAINEL MONITOR (Escondido por padrão até o login ser validado) -->
         <div id="card-monitor" class="hidden space-y-4">
             
             <!-- Barra Superior de Parâmetros Gerais -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <!-- Cartão 1: Pressão lida (p21 em PSI) e Temperatura de Saturação (tsat) -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
                     <span class="block text-xs font-bold text-slate-500 uppercase">Pressão / Tsat</span>
                     <span class="text-lg font-bold font-mono text-blue-600 mt-1 block">
-                        <span id="val-pressao">0.00</span> bar <span class="text-slate-400 font-normal">|</span> <span id="val-tsat" class="text-slate-800">0.00</span>°C
+                        <span id="val-pressao">0.00</span> PSI <span class="text-slate-400 font-normal">|</span> <span id="val-tsat" class="text-slate-800">0.00</span>°C
                     </span>
                 </div>
+                <!-- Cartão 2: Fase do Ciclo (coluna 'fase' da tabela) -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
                     <span class="block text-xs font-bold text-slate-500 uppercase">Fase do Ciclo</span>
                     <span id="val-status" class="text-sm font-extrabold uppercase text-emerald-600 mt-1 block">-</span>
                 </div>
+                <!-- Cartão 3: Valores de Temperatura Mínima e Máxima calculados entre os sensores ativados -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
                     <span class="block text-xs font-bold text-slate-500 uppercase">Mín / Máx (Ativados)</span>
                     <span id="val-temp-minmax" class="text-base font-extrabold font-mono text-slate-800 mt-1 block">0.0 / 0.0 °C</span>
                 </div>
+                <!-- Cartão 4: Data e Hora da última medição recebida (coluna 'timestamp_fl') -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
                     <span class="block text-xs font-bold text-slate-500 uppercase">Última Leitura</span>
                     <span id="val-timestamp" class="text-xs font-mono font-semibold text-slate-600 mt-1.5 block">--/--/---- --:--:--</span>
                 </div>
             </div>
 
-            <!-- BLOCOS EM 2 COLUNAS PRINCIPAIS (PC) COM 2 COLUNAS INTERNAS CADA -->
+            <!-- Divisão dos Blocos de Sensores em 2 Colunas -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 
-                <!-- COLUNA 1: Bloco T11 a T17 -->
+                <!-- COLUNA 1: Contentor dos Termopares T11 a T17 -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
                     <div class="text-xs font-bold text-slate-700 uppercase border-b pb-2 flex justify-between items-center">
                         <span>Bloco 1 — Termopares T11 a T17</span>
                         <span class="text-[10px] text-slate-400 font-normal">📈 Gráfico | 🌡️ Mín/Máx</span>
                     </div>
+                    <!-- O JavaScript injetará os cartões T11-T17 dentro desta div -->
                     <div id="grid-bloco1" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
                 </div>
 
-                <!-- COLUNA 2: Bloco T21 a T27 -->
+                <!-- COLUNA 2: Contentor dos Termopares T21 a T27 -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
                     <div class="text-xs font-bold text-slate-700 uppercase border-b pb-2 flex justify-between items-center">
                         <span>Bloco 2 — Termopares T21 a T27</span>
                         <span class="text-[10px] text-slate-400 font-normal">📈 Gráfico | 🌡️ Mín/Máx</span>
                     </div>
+                    <!-- O JavaScript injetará os cartões T21-T27 dentro desta div -->
                     <div id="grid-bloco2" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
                 </div>
 
@@ -95,49 +117,61 @@
 
     </main>
 
-    <!-- Footer -->
+    <!-- Rodapé -->
     <footer class="text-center text-xs text-slate-500 py-3">
         TRUFOS — Qualificação Térmica Automatizada
     </footer>
 
+    <!-- Lógica em JavaScript -->
     <script>
+        // URL do webhook no n8n responsável por validar o PIN e consultar a tabela 'medicoes_fieldlogger' no PostgreSQL
         const WEBHOOK_URL = 'https://n8n.trufos.com.br/webhook/validar-pin-painel';
-        let pinAtual = '';
-        let intervalId = null;
+        
+        let pinAtual = ''; // Guarda o PIN digitado pelo utilizador durante a sessão
+        let intervalId = null; // Guarda o ponteiro do temporizador de polling (atualização automática a cada 5s)
 
+        // Lista de identificadores dos canais de sensores de cada bloco
         const canaisBloco1 = ['t11', 't12', 't13', 't14', 't15', 't16', 't17'];
         const canaisBloco2 = ['t21', 't22', 't23', 't24', 't25', 't26', 't27'];
 
+        // Função que aciona a construção inicial da interface dos sensores
         function criarCardsSensores() {
             preencherBloco('grid-bloco1', canaisBloco1);
             preencherBloco('grid-bloco2', canaisBloco2);
         }
 
+        // Função que gera o HTML interno dos cartões de cada sensor dinamicamente
         function preencherBloco(containerId, listaCanais) {
             const container = document.getElementById(containerId);
-            container.innerHTML = '';
+            container.innerHTML = ''; // Limpa o conteúdo do container antes de preencher
 
             listaCanais.forEach(idCanal => {
-                const nomeExibicao = idCanal.toUpperCase();
+                const nomeExibicao = idCanal.toUpperCase(); // Ex: converte 't11' para 'T11'
                 const html = `
                     <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex items-center justify-between">
                         <div class="flex items-center space-x-1.5">
+                            <!-- Nome do Canal -->
                             <span class="text-sm font-extrabold text-slate-800 w-8">${nomeExibicao}</span>
                             <div class="flex items-center space-x-1.5 border-l pl-1.5 border-slate-300">
+                                <!-- Checkbox para seleção individual do gráfico -->
                                 <label class="cursor-pointer flex items-center text-xs text-slate-600 hover:text-blue-600" title="Selecionar para Gráfico">
                                     <input type="checkbox" value="${idCanal}" class="w-4 h-4 text-blue-600 rounded border-slate-300 mr-0.5"> 📈
                                 </label>
+                                <!-- Checkbox para incluir ou excluir o sensor do cálculo dinâmico de Mínima/Máxima (ISO) -->
                                 <label class="cursor-pointer flex items-center text-xs text-slate-600 hover:text-emerald-600" title="Participar do Cálculo Mín/Máx (ISO)">
                                     <input type="checkbox" id="enable-${idCanal}" checked class="w-4 h-4 text-emerald-600 rounded border-slate-300 mr-0.5"> 🌡️
                                 </label>
                             </div>
                         </div>
 
+                        <!-- Displays de Leitura de Temperatura e Letalidade F0 -->
                         <div class="flex space-x-2">
+                            <!-- Caixa de Temperatura -->
                             <div id="box-temp-${idCanal}" class="bg-white px-2.5 py-1.5 rounded-md border border-slate-200 text-center min-w-[85px] transition-colors">
                                 <span class="block text-[9px] text-slate-400 uppercase font-bold">Temp (°C)</span>
                                 <span id="${idCanal}-temp" class="text-sm font-extrabold font-mono text-slate-800">0.00</span>
                             </div>
+                            <!-- Caixa de F0 -->
                             <div id="box-f0-${idCanal}" class="bg-white px-2.5 py-1.5 rounded-md border border-slate-200 text-center min-w-[85px] transition-colors">
                                 <span class="block text-[9px] text-slate-400 uppercase font-bold">F₀</span>
                                 <span id="${idCanal}-f0" class="text-sm font-extrabold font-mono text-emerald-700">0.00</span>
@@ -145,36 +179,43 @@
                         </div>
                     </div>
                 `;
-                container.innerHTML += html;
+                container.innerHTML += html; // Insere o HTML gerado no DOM
             });
         }
 
+        // Função de autenticação disparada ao enviar o formulário
         async function iniciarMonitoramento(event) {
-            if(event) event.preventDefault();
+            if(event) event.preventDefault(); // Impede o recarregamento padrão da página pelo navegador
             
-            pinAtual = document.getElementById('input-pin').value.trim();
+            pinAtual = document.getElementById('input-pin').value.trim(); // Obtém o PIN digitado
             const msgErro = document.getElementById('msg-erro');
             const btnAcessar = document.getElementById('btn-acessar');
 
+            // Reseta elementos de erro e altera o estado do botão
             msgErro.classList.add('hidden');
             btnAcessar.disabled = true;
             btnAcessar.innerText = 'Conectando...';
 
-            criarCardsSensores();
+            criarCardsSensores(); // Renderiza a estrutura dos cartões
 
+            // Tenta efetuar a primeira busca no servidor com o PIN informado
             const sucesso = await buscarUltimaLeitura();
 
             if (sucesso) {
-                document.getElementById('card-login').classList.add('hidden');
-                document.getElementById('card-monitor').classList.remove('hidden');
+                // Se o PIN for válido e houver retorno de dados:
+                document.getElementById('card-login').classList.add('hidden'); // Oculta a tela de login
+                document.getElementById('card-monitor').classList.remove('hidden'); // Exibe o painel de monitoramento
                 
+                // Atualiza o crachá de status da conexão no cabeçalho
                 const elStatus = document.getElementById('status-conexao');
                 elStatus.innerText = 'Online (5s)';
                 elStatus.className = 'text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full font-medium';
 
+                // Inicia o ciclo de atualização automática (polling) a cada 5000ms (5 segundos)
                 if (intervalId) clearInterval(intervalId);
                 intervalId = setInterval(buscarUltimaLeitura, 5000);
             } else {
+                // Se a requisição falhar ou o PIN for inválido:
                 msgErro.innerText = 'PIN inválido ou sem dados recentes.';
                 msgErro.classList.remove('hidden');
                 btnAcessar.disabled = false;
@@ -182,78 +223,117 @@
             }
         }
 
+        // Função principal que consulta o n8n e atualiza os valores na tela
         async function buscarUltimaLeitura() {
             try {
+                // Dispara requisição HTTP POST para o webhook n8n passando o PIN no corpo da mensagem
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ pin: pinAtual })
                 });
 
+                // Converte a resposta recebida em JSON
                 const resultado = await response.json();
 
+                // Verifica se a requisição retornou sucesso e dados válidos
                 if (resultado.sucesso && resultado.dados.length > 0) {
-                    const d = resultado.dados[0];
+                    const d = resultado.dados[0]; // Extrai o registro de medição mais recente
 
-                    if (d.pressao !== undefined) document.getElementById('val-pressao').innerText = Number(d.pressao).toFixed(2);
-                    if (d.tsat !== undefined) document.getElementById('val-tsat').innerText = Number(d.tsat).toFixed(2);
-                    if (d.status_ciclo) document.getElementById('val-status').innerText = d.status_ciclo;
-                    
-                    if (d.timestamp_fl) {
-                        const dataObj = new Date(d.timestamp_fl);
+                    // 1. ATUALIZAÇÃO DO NOME DO CICLO (Lê d.nome_ciclo, d.ciclo, d.processo ou d.nome_processo)
+                    const nomeCicloVal = d.nome_ciclo ?? d.ciclo ?? d.processo ?? d.nome_processo;
+                    if (nomeCicloVal) {
+                        document.getElementById('val-nome-ciclo').innerText = nomeCicloVal;
+                    }
+
+                    // 2. ATUALIZAÇÃO DA PRESSÃO (Lê d.p21 da tabela, com fallback para d.pressao)
+                    const pressaoVal = d.p21 ?? d.pressao;
+                    if (pressaoVal !== undefined && pressaoVal !== null) {
+                        document.getElementById('val-pressao').innerText = Number(pressaoVal).toFixed(2);
+                    }
+
+                    // 3. ATUALIZAÇÃO DO TSAT (Lê d.tsat calculado pela coluna gerada no PostgreSQL)
+                    if (d.tsat !== undefined && d.tsat !== null) {
+                        document.getElementById('val-tsat').innerText = Number(d.tsat).toFixed(2);
+                    }
+
+                    // 4. ATUALIZAÇÃO DA FASE DO CICLO (Lê d.fase, com fallbacks para d.status_ciclo ou d.fase_atual)
+                    const faseVal = d.fase ?? d.status_ciclo ?? d.fase_atual;
+                    if (faseVal) {
+                        document.getElementById('val-status').innerText = faseVal;
+                    }
+
+                    // 5. ATUALIZAÇÃO DA DATA E HORA DA LEITURA (Lê d.timestamp_fl)
+                    const tsVal = d.timestamp_fl ?? d.created_at ?? d.timestamp;
+                    if (tsVal) {
+                        const dataObj = new Date(tsVal);
                         document.getElementById('val-timestamp').innerText = dataObj.toLocaleString('pt-BR');
                     }
 
-                    const todosCanais = [...canaisBloco1, ...canaisBloco2];
-                    let valoresAtivos = [];
+                    // 6. ATUALIZAÇÃO DOS CANAIS DOS SENSORES (T11 a T17 e T21 a T27)
+                    const todosCanais = [...canaisBloco1, ...canaisBloco2]; // Consolida a lista com os 14 canais
+                    let valoresAtivos = []; // Lista para armazenar as temperaturas ativas para o cálculo Mín/Máx
 
                     todosCanais.forEach(idCanal => {
+                        // Mapeia os valores de Temperatura (suporta nomenclatura direta ex: d.t11 ou d.ch_t11)
                         const tempVal = Number(d[idCanal] ?? d[`ch_${idCanal}`] ?? 0);
+                        // Mapeia os valores de Letalidade F0 (ex: d.f0_t11)
                         const f0Val = Number(d[`f0_${idCanal}`] ?? 0);
 
                         const elTemp = document.getElementById(`${idCanal}-temp`);
                         const elF0 = document.getElementById(`${idCanal}-f0`);
                         const elEnable = document.getElementById(`enable-${idCanal}`);
 
+                        // Atualiza os textos dos elementos HTML
                         if(elTemp) elTemp.innerText = tempVal.toFixed(2);
                         if(elF0) elF0.innerText = f0Val.toFixed(2);
 
+                        // Reseta a estilização do cartão de temperatura para o estado padrão (fundo branco)
                         const boxTemp = document.getElementById(`box-temp-${idCanal}`);
                         boxTemp.className = "bg-white px-2.5 py-1.5 rounded-md border border-slate-200 text-center min-w-[85px]";
                         elTemp.className = "text-sm font-extrabold font-mono text-slate-800";
 
+                        // Se o sensor estiver habilitado (checkbox marcado) e lendo valor positivo, inclui na lista para Mín/Máx
                         if (elEnable && elEnable.checked && tempVal > 0) {
                             valoresAtivos.push({ id: idCanal, temp: tempVal });
                         }
                     });
 
+                    // 7. CÁLCULO E DESTAQUE VISUAL DE MÍNIMA E MÁXIMA
                     if (valoresAtivos.length > 0) {
+                        // Ordena os sensores ativos em ordem crescente de temperatura
                         valoresAtivos.sort((a, b) => a.temp - b.temp);
-                        const menorObj = valoresAtivos[0];
-                        const maiorObj = valoresAtivos[valoresAtivos.length - 1];
+                        const menorObj = valoresAtivos[0]; // Sensor com menor temperatura
+                        const maiorObj = valoresAtivos[valoresAtivos.length - 1]; // Sensor com maior temperatura
 
+                        // Exibe os valores Mín/Máx formatados no cartão superior
                         document.getElementById('val-temp-minmax').innerText = `${menorObj.temp.toFixed(1)} / ${maiorObj.temp.toFixed(1)} °C`;
 
+                        // Aplica o destaque colorido nos cartões dos sensores Mínimo (Verde) e Máximo (Vermelho)
                         if (valoresAtivos.length > 1) {
+                            // Destaque do Menor valor (Verde / Emerald)
                             const boxMin = document.getElementById(`box-temp-${menorObj.id}`);
                             const txtMin = document.getElementById(`${menorObj.id}-temp`);
                             boxMin.className = "bg-emerald-50 px-2.5 py-1.5 rounded-md border border-emerald-300 text-center min-w-[85px]";
                             txtMin.className = "text-sm font-extrabold font-mono text-emerald-700";
 
+                            // Destaque do Maior valor (Vermelho / Rose)
                             const boxMax = document.getElementById(`box-temp-${maiorObj.id}`);
                             const txtMax = document.getElementById(`${maiorObj.id}-temp`);
                             boxMax.className = "bg-rose-50 px-2.5 py-1.5 rounded-md border border-rose-300 text-center min-w-[85px]";
                             txtMax.className = "text-sm font-extrabold font-mono text-rose-700";
                         }
                     } else {
+                        // Se nenhum sensor estiver ativo, exibe zerado
                         document.getElementById('val-temp-minmax').innerText = `0.0 / 0.0 °C`;
                     }
 
-                    return true;
+                    return true; // Retorna verdadeiro sinalizando atualização realizada com sucesso
                 }
-                return false;
+                return false; // Retorna falso se a resposta não trouxer dados
             } catch (error) {
-                console.error('Erro na atualização:', error);
+                // Registra falhas de comunicação ou erros no console do navegador
+                console.error('Erro ao atualizar leituras no painel:', error);
                 return false;
             }
         }
