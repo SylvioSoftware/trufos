@@ -21,7 +21,7 @@
             <img src="../img/logo.png" alt="TRUFOS" class="h-9 object-contain bg-white px-1.5 py-0.5 rounded"> <!-- Logotipo da marca -->
             <div>
                 <h1 class="text-base font-bold tracking-wide leading-tight">Monitor Térmico de Autoclave</h1> <!-- Título da aplicação -->
-                <!-- Identificador / Nome do Ciclo Atual no Cabeçalho -->
+                <!-- Identificador / Nome do Ciclo Atual no Cabeçalho (Mapeado da coluna processo_id) -->
                 <span id="nome-ciclo-header" class="text-xs text-slate-400 font-normal hidden sm:inline-block">Ciclo: <strong id="val-nome-ciclo" class="text-slate-200">-</strong></span>
             </div>
         </div>
@@ -240,8 +240,8 @@
                 if (resultado.sucesso && resultado.dados.length > 0) {
                     const d = resultado.dados[0]; // Extrai o registro de medição mais recente
 
-                    // 1. ATUALIZAÇÃO DO NOME DO CICLO (Lê d.nome_ciclo, d.ciclo, d.processo ou d.nome_processo)
-                    const nomeCicloVal = d.nome_ciclo ?? d.ciclo ?? d.processo ?? d.nome_processo;
+                    // 1. ATUALIZAÇÃO DO NOME DO CICLO (Lê a coluna 'processo_id' da tabela medicoes_fieldlogger)
+                    const nomeCicloVal = d.processo_id ?? d.nome_ciclo ?? d.ciclo ?? d.processo ?? d.nome_processo;
                     if (nomeCicloVal) {
                         document.getElementById('val-nome-ciclo').innerText = nomeCicloVal;
                     }
@@ -263,10 +263,12 @@
                         document.getElementById('val-status').innerText = faseVal;
                     }
 
-                    // 5. ATUALIZAÇÃO DA DATA E HORA DA LEITURA (Lê d.timestamp_fl)
+                    // 5. ATUALIZAÇÃO DA DATA E HORA DA LEITURA (Trata a string timestamp_fl para evitar deslocamento de fuso horário UTC)
                     const tsVal = d.timestamp_fl ?? d.created_at ?? d.timestamp;
                     if (tsVal) {
-                        const dataObj = new Date(tsVal);
+                        // Substitui o espaço por 'T' para garantir a correta interpretação ISO pelo navegador sem subtrair 3h
+                        const strIso = typeof tsVal === 'string' ? tsVal.replace(' ', 'T') : tsVal;
+                        const dataObj = new Date(strIso);
                         document.getElementById('val-timestamp').innerText = dataObj.toLocaleString('pt-BR');
                     }
 
