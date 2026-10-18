@@ -263,13 +263,29 @@
                         document.getElementById('val-status').innerText = faseVal;
                     }
 
-                    // 5. ATUALIZAÇÃO DA DATA E HORA DA LEITURA (Trata a string timestamp_fl para evitar deslocamento de fuso horário UTC)
+                    // 5. ATUALIZAÇÃO DA DATA E HORA DA LEITURA (Exibe exatamente a hora gravada no Postgres sem conversão de fuso)
                     const tsVal = d.timestamp_fl ?? d.created_at ?? d.timestamp;
                     if (tsVal) {
-                        // Substitui o espaço por 'T' para garantir a correta interpretação ISO pelo navegador sem subtrair 3h
-                        const strIso = typeof tsVal === 'string' ? tsVal.replace(' ', 'T') : tsVal;
-                        const dataObj = new Date(strIso);
-                        document.getElementById('val-timestamp').innerText = dataObj.toLocaleString('pt-BR');
+                        let textoData = '';
+                        
+                        if (typeof tsVal === 'string') {
+                            // Exemplo de entrada: "2026-10-17 16:49:34" ou "2026-10-17T16:49:34.000Z"
+                            const partes = tsVal.replace('T', ' ').split('.')[0].split(' ');
+                            if (partes.length >= 2) {
+                                const dataParts = partes[0].split('-'); // ['2026', '10', '17']
+                                const horaPart = partes[1];             // '16:49:34'
+                                if (dataParts.length === 3) {
+                                    textoData = `${dataParts[2]}/${dataParts[1]}/${dataParts[0]}, ${horaPart}`;
+                                }
+                            }
+                        }
+                    
+                        // Fallback de segurança caso a conversão de string falhe
+                        if (!textoData) {
+                            textoData = new Date(tsVal).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+                        }
+                    
+                        document.getElementById('val-timestamp').innerText = textoData;
                     }
 
                     // 6. ATUALIZAÇÃO DOS CANAIS DOS SENSORES (T11 a T17 e T21 a T27)
