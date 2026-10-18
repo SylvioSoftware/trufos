@@ -63,19 +63,20 @@
     </footer>
 
     <script>
-        const WEBHOOK_HISTORICO_URL = 'https://n8n.trufos.com.br/webhook/historico-ciclo'; // Webhook do n8n que retorna os registros
+        const WEBHOOK_HISTORICO_URL = 'https://n8n.trufos.com.br/webhook/historico-ciclo';
         
         let chartInstance = null;
         let dadosHistoricos = [];
         let pinAtual = '';
-        let canalFoco = 'COMPARA'; // 'COMPARA' para todos selecionados ou 't11', 't12', etc.
-        let intervaloAmostragemSegundos = 30; // Padrão: 30 segundos de sub-amostragem para leveza de renderização
+        let canalFoco = 'COMPARA';
+        let intervaloAmostragemSegundos = 30;
+        let intervalGraficoId = null;
 
         // Estado inicial das preferências de exibição de eixos (carregado do localStorage)
         let preferencias = {
             tsat: localStorage.getItem('trufos_pref_tsat') !== 'false',
             pressao: localStorage.getItem('trufos_pref_pressao') !== 'false',
-            f0: localStorage.getItem('trufos_pref_f0') === 'true' // Padrão false para não poluir
+            f0: localStorage.getItem('trufos_pref_f0') === 'true'
         };
 
         const todosCanais = [
@@ -95,6 +96,9 @@
             atualizarBotoesToggleUI();
             gerarBarraAbas();
             carregarHistoricoCiclo();
+            
+            // Inicia a atualização automática em segundo plano baseada no tempo selecionado
+            iniciarAtualizacaoAutomatica();
         });
 
         // Alterna o estado do eixo e salva no localStorage
@@ -124,14 +128,12 @@
             const container = document.getElementById('container-abas');
             container.innerHTML = '';
 
-            // Aba "Visão Comparativa"
             const btnGeral = document.createElement('button');
             btnGeral.innerText = "📊 Visão Geral / Comparativo";
             btnGeral.className = `px-3 py-1.5 rounded-lg font-bold transition whitespace-nowrap ${canalFoco === 'COMPARA' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`;
             btnGeral.onclick = () => mudarAba('COMPARA');
             container.appendChild(btnGeral);
 
-            // Abas individuais T11 a T27
             todosCanais.forEach(c => {
                 const btn = document.createElement('button');
                 btn.innerText = c.toUpperCase();
@@ -150,6 +152,35 @@
         function alterarAmostragem(valor) {
             intervaloAmostragemSegundos = Number(valor);
             renderizarGrafico();
+            iniciarAtualizacaoAutomatica(); // Reinicia o timer com o novo intervalo escolhido
+        }
+
+        // Configura o timer automático em segundo plano
+        function iniciarAtualizacaoAutomatica() {
+            if (intervalGraficoId) clearInterval(intervalGraficoId);
+            
+            const tempoMs = Math.max(intervaloAmostragemSegundos, 5) * 1000;
+            
+            intervalGraficoId = setInterval(async () => {
+                try {
+                    const response = await fetch(WEBHOOK_HISTORICO_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pin: pinAtual, historico: true })
+                    });
+                    const resultado = await response.json();
+                    
+                    if (resultado.sucesso && resultado.dados && resultado.dados.length > 0) {
+                        dadosHistoricos = resultado.dados.sort((a, b) => new Date(a.timestamp_fl.replace('T', ' ')) - new Date(b.timestamp_fl.replace('T', ' ')));
+                        
+                        document.getElementById('subtitulo-ciclo').innerText = `Total de Registros Brutos: ${dadosHistoricos.length} medições (Atualizado em tempo real)`;
+                        
+                        renderizarGrafico();
+                    }
+                } catch (err) {
+                    console.error("Erro na atualização automática do gráfico:", err);
+                }
+            }, tempoMs);
         }
 
         // Busca todos os pontos históricos no backend n8n
@@ -164,8 +195,7 @@
                 const resultado = await response.json();
 
                 if (resultado.sucesso && resultado.dados.length > 0) {
-                    // Ordena cronologicamente do mais antigo para o mais recente
-                    dadosHistoricos = resultado.dados.sort((a, b) => new Date(a.timestamp_fl) - new Date(b.timestamp_fl));
+                    dadosHistoricos = resultado.dados.sort((a, b) => new Date(a.timestamp_fl.replace('T', ' ')) - new Date(b.timestamp_fl.replace('T', ' ')));
 
                     const primeiro = dadosHistoricos[0];
                     const nomeProc = primeiro.processo_id ?? primeiro.nome_ciclo ?? 'Ciclo de Qualificação';
@@ -180,9 +210,9 @@
             }
         }
 
-        // Sub-amostragem inteligente dos dados (agrupa pontos por intervalo de N segundos)
+        // Sub-amostragem inteligente dos dados
         function filtrarPorAmostragem(dados, passoSegundos) {
-            if (passoSegundos <= 5) return dados; // Retorna dados brutos
+            if (passoSegundos <= 5) return dados;
             
             const filtrados = [];
             let ultimoTimestamp = 0;
@@ -206,7 +236,6 @@
 
             const dadosFiltrados = filtrarPorAmostragem(dadosHistoricos, intervaloAmostragemSegundos);
 
-            // Rótulos do Eixo X (Horário HH:MM:SS)
             const labelsX = dadosFiltrados.map(d => {
                 const ts = d.timestamp_fl ?? d.created_at;
                 const partes = ts.replace('T', ' ').split('.')[0].split(' ');
@@ -214,9 +243,8 @@
             });
 
             const datasets = [];
-            const anotacoesFases = {}; // Para desenhar as linhas de fase no gráfico
+            const anotacoesFases = {};
 
-            // Identificação e criação das Linhas Pontilhadas de Mudança de Fase
             let ultimaFase = '';
             dadosFiltrados.forEach((d, idx) => {
                 const faseAtual = d.fase ?? d.status_ciclo;
@@ -226,7 +254,7 @@
                         type: 'line',
                         xMin: idx,
                         xMax: idx,
-                        borderColor: '#ef4444', // Cor vermelha para transição
+                        borderColor: '#ef4444',
                         borderWidth: 2,
                         borderDash: [6, 6],
                         label: {
@@ -241,9 +269,7 @@
                 }
             });
 
-            // 1. DATASETS DE TEMPERATURA
             if (canalFoco === 'COMPARA') {
-                // Desenha todos os canais ativados no gráfico comparativo
                 const cores = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#f97316'];
                 todosCanais.forEach((c, index) => {
                     datasets.push({
@@ -256,22 +282,20 @@
                     });
                 });
             } else {
-                // Desenha apenas o canal focado em destaque (ex: T11)
                 datasets.push({
                     label: `Temp ${canalFoco.toUpperCase()} (°C)`,
                     data: dadosFiltrados.map(d => Number(d[canalFoco] ?? d[`ch_${canalFoco}`] ?? 0)),
-                    borderColor: '#f43f5e', // Rosa/Vermelho em destaque
+                    borderColor: '#f43f5e',
                     borderWidth: 2.5,
                     pointRadius: 1,
                     yAxisID: 'yTemp'
                 });
 
-                // Inclui a curva de F0 individual se o toggle de F0 estiver ativo
                 if (preferencias.f0) {
                     datasets.push({
                         label: `F₀ ${canalFoco.toUpperCase()}`,
                         data: dadosFiltrados.map(d => Number(d[`f0_${canalFoco}`] ?? 0)),
-                        borderColor: '#10b981', // Verde
+                        borderColor: '#10b981',
                         borderWidth: 2,
                         borderDash: [4, 4],
                         pointRadius: 0,
@@ -280,12 +304,11 @@
                 }
             }
 
-            // 2. DATASET DE TSAT (Se ativado no toggle)
             if (preferencias.tsat) {
                 datasets.push({
                     label: 'Tsat (°C)',
                     data: dadosFiltrados.map(d => Number(d.tsat ?? 0)),
-                    borderColor: '#60a5fa', // Azul claro
+                    borderColor: '#60a5fa',
                     borderWidth: 2,
                     borderDash: [2, 2],
                     pointRadius: 0,
@@ -293,19 +316,17 @@
                 });
             }
 
-            // 3. DATASET DE PRESSÃO (Se ativado no toggle)
             if (preferencias.pressao) {
                 datasets.push({
                     label: 'Pressão (PSI)',
                     data: dadosFiltrados.map(d => Number(d.p21 ?? d.pressao ?? 0)),
-                    borderColor: '#06b6d4', // Ciano
+                    borderColor: '#06b6d4',
                     borderWidth: 1.5,
                     pointRadius: 0,
                     yAxisID: 'yPressao'
                 });
             }
 
-            // Destrói instância anterior antes de criar a nova
             if (chartInstance) chartInstance.destroy();
 
             const ctx = document.getElementById('meuGrafico').getContext('2d');
